@@ -29,4 +29,10 @@ public class Layer {
                 .forEach(i -> stack.add(null));
         return stack;
     }
+
+    public List<List<Double>> getWeightsMat() {
+        return neurons.stream()
+                .map(n -> n.getWeights())
+                .collect(Collectors.toList());
+    }
 }

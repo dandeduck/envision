@@ -24,4 +24,8 @@ public class Neuron {
     public void setVal(double val) {
         this.val = val;
     }
+
+    public List<Double> getWeights() {
+        return weights;
+    }
 }
