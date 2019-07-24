@@ -1,4 +1,4 @@
-package neuralNetwork.constants.enums;
+package neuralNetworks.constants.enums;
 
 public enum ActivationFunctions {
     TANH,

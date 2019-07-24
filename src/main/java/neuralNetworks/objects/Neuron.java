@@ -1,19 +1,17 @@
-package neuralNetwork.objects;
-
-import java.util.List;
+package neuralNetworks.objects;
 
 public class Neuron {
 
     private double val;
     private double bias;
-    private final List<Double> weights;
+    private final Vector weights;
 
-    public Neuron(double bias, List<Double> weights) {
+    public Neuron(double bias, Vector weights) {
         this.bias = bias;
         this.weights = weights;
     }
 
-    public Neuron(List<Double> weights) {
+    public Neuron(Vector weights) {
         this(0, weights);
     }
 
@@ -25,7 +23,11 @@ public class Neuron {
         this.val = val;
     }
 
-    public List<Double> getWeights() {
+    public Vector getWeights() {
         return weights;
+    }
+
+    public double getBias() {
+        return bias;
     }
 }
