@@ -1,6 +1,5 @@
 package neuralNetworks.objects;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,37 +8,46 @@ public class Network {
     private List<Layer> layers;
 
     public Network(List<Integer> layerSizes) {
-        layers = new ArrayList<>();
+        layers = initLayers(layerSizes);
+    }
 
-        layers = layerSizes.stream()
+    private List<Layer> initLayers(List<Integer> layerSizes) {
+        List<Layer> tmp = layerSizes.stream()
                 .skip(1)
-                .map(l -> new Layer(layerSizes.get(layerSizes.indexOf(l.intValue())-1),l))
+                .map(l -> new Layer(getPrevInteger(layerSizes,l),l))
                 .collect(Collectors.toList());
-        layers.remove(0);
+        tmp.add(new Layer(layerSizes.get(-1),0));
+
+        return tmp;
     }
 
     private void feedFarward(Vector input) {
         updateInputNeurons(input);
         layers.stream()
                 .skip(1)
-                .forEach(l -> feedNextLayer(l));
+                .forEach(l -> feedNextLayer(getPrevLayer(layers,l),l));
     }
 
     private void updateInputNeurons(Vector input) {
         layers.get(0).updateLayer(input);
     }
 
-    private void feedNextLayer(Layer prevLayer) {
+    private Integer getPrevInteger(List<Integer> list, Integer currentInteger) {
+        return list.get(list.indexOf(currentInteger)-1);
+    }
+
+
+    private Layer getPrevLayer(List<Layer> layers, Layer currentLayer) {
+        return layers.get(layers.indexOf(currentLayer)-1);
+    }
+
+
+    private void feedNextLayer(Layer prevLayer, Layer nextLayer) {
         Matrix WeightsMat = prevLayer.getWeightsMat();
         Vector prevValues = prevLayer.getValues();
-        Vector biases = prevLayer.getBiases();
+        Vector biases = nextLayer.getBiases();
 
-        int nextLayerIndex = layers.indexOf(prevLayer)+1;
-        if(nextLayerIndex == layers.size())
-            return;
-
-        Layer currLayer = layers.get(nextLayerIndex);
-        currLayer.updateLayer(calcNextValues(WeightsMat, prevValues, biases));
+        nextLayer.updateLayer(calcNextValues(WeightsMat, prevValues, biases));
     }
 
     private Vector calcNextValues(Matrix W, Vector a, Vector b) {
