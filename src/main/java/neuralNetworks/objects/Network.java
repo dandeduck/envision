@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class Network {
 
-    private List<Layer> layers;
+    private final List<Layer> layers;
 
     public Network(Integer... layerSizes) {
         layers = initLayers(Arrays.asList(layerSizes));

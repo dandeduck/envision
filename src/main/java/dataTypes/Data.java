@@ -5,7 +5,7 @@ import java.util.Deque;
 
 public class Data<T> {
 
-    private final static String ILLEGAL_DATA_MSG = "There must be the same number of input and output data points";
+    private static final String ILLEGAL_DATA_MSG = "There must be the same number of input and output data points";
 
     private Deque<T> input;
     private Deque<T> output;
