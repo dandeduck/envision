@@ -1,10 +1,8 @@
 package neuralNetworks.objects;
 
-import dataTypes.Matrix;
 import dataTypes.Vector;
 
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -12,41 +10,19 @@ public class Layer {
 
     private final List<Neuron> neurons;
 
-    public Layer(int size, int nextSize) {
-        neurons = initNeurons(size, nextSize);
+    public Layer(int size) {
+        neurons = initNeurons(size);
     }
 
-    private List<Neuron> initNeurons(int size, int nextSize) {
+    private List<Neuron> initNeurons(int size) {
         return IntStream.range(1, size)
-                .mapToObj(n -> initNeuron(nextSize))
+                .mapToObj(n -> new Neuron())
                 .collect(Collectors.toList());
-    }
-
-    private Neuron initNeuron(int nextSize) {
-        return new Neuron(getNeuronWeights(nextSize));
-    }
-
-    private Vector getNeuronWeights(int prevSize) {
-        return new Vector(IntStream.range(1, prevSize)
-                .mapToObj(w -> new Random().nextDouble())
-                .collect(Collectors.toList()));
-    }
-
-    public Matrix getWeightsMat() {
-        return new Matrix(neurons.stream()
-                .map(n -> n.getWeights())
-                .collect(Collectors.toList()));
     }
 
     public Vector getValues() {
         return new Vector(neurons.stream()
                 .map(n -> n.getVal())
-                .collect(Collectors.toList()));
-    }
-
-    public Vector getBiases() {
-        return new Vector(neurons.stream()
-                .map(n -> n.getBias())
                 .collect(Collectors.toList()));
     }
 

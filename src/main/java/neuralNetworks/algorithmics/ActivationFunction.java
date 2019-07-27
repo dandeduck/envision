@@ -17,12 +17,12 @@ public class ActivationFunction {
         this.funcType = funcType;
 
         functions = new HashMap<>();
-        functions.put(ActivationFunctionTypes.SIGMOID, v -> useSigmoid(v));
-        functions.put(ActivationFunctionTypes.TANH, v -> useTanH(v));
-        functions.put(ActivationFunctionTypes.RELU, v -> useReLU(v));
-        functions.put(ActivationFunctionTypes.LINEAR, v -> useLinear(v));
-        functions.put(ActivationFunctionTypes.LEAKY_RELU, v -> useLeakyReLU(v));
-        functions.put(ActivationFunctionTypes.SOFTPLUS, v -> useSoftplus(v));
+        functions.put(ActivationFunctionTypes.SIGMOID, this::useSigmoid);
+        functions.put(ActivationFunctionTypes.TANH, this::useTanH);
+        functions.put(ActivationFunctionTypes.RELU, this::useReLU);
+        functions.put(ActivationFunctionTypes.LINEAR, this::useLinear);
+        functions.put(ActivationFunctionTypes.LEAKY_RELU, this::useLeakyReLU);
+        functions.put(ActivationFunctionTypes.SOFTPLUS, this::useSoftplus);
     }
 
     public double process(double preProcessValue) {

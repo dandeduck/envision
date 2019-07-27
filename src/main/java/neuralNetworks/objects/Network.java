@@ -21,14 +21,12 @@ public class Network {
     }
 
     private List<Layer> initLayers(List<Integer> layerSizes) {
-        List<Layer> tmp = layerSizes.stream()
-                .skip(1)
-                .map(l -> new Layer(getPrevInteger(layerSizes,l),l))
+        return layerSizes.stream()
+                .map(l -> new Layer(l))
                 .collect(Collectors.toList());
-        tmp.add(new Layer(layerSizes.get(-1),0));
-
-        return tmp;
     }
+
+    private Matrix
 
     private void feedFarward(Vector input) {
         updateInputNeurons(input);
@@ -40,11 +38,6 @@ public class Network {
     private void updateInputNeurons(Vector input) {
         layers.get(0).updateLayer(input);
     }
-
-    private Integer getPrevInteger(List<Integer> list, Integer currentInteger) {
-        return list.get(list.indexOf(currentInteger)-1);
-    }
-
 
     private Layer getPrevLayer(List<Layer> layers, Layer currentLayer) {
         return layers.get(layers.indexOf(currentLayer)-1);
