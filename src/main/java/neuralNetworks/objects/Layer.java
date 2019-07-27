@@ -1,5 +1,8 @@
 package neuralNetworks.objects;
 
+import dataTypes.Matrix;
+import dataTypes.Vector;
+
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;

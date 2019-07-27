@@ -1,4 +1,4 @@
-package neuralNetworks.objects;
+package dataTypes;
 
 import java.util.ArrayDeque;
 import java.util.Collection;

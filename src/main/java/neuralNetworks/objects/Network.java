@@ -1,5 +1,10 @@
 package neuralNetworks.objects;
 
+
+import dataTypes.Matrix;
+import dataTypes.Vector;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,8 +12,8 @@ public class Network {
 
     private List<Layer> layers;
 
-    public Network(List<Integer> layerSizes) {
-        layers = initLayers(layerSizes);
+    public Network(Integer... layerSizes) {
+        layers = initLayers(Arrays.asList(layerSizes));
     }
 
     private List<Layer> initLayers(List<Integer> layerSizes) {

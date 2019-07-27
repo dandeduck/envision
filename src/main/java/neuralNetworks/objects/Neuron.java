@@ -1,5 +1,7 @@
 package neuralNetworks.objects;
 
+import dataTypes.Vector;
+
 public class Neuron {
 
     private double val;
