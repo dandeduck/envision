@@ -3,6 +3,8 @@ package neuralNetworks.objects;
 
 import dataTypes.Matrix;
 import dataTypes.Vector;
+import neuralNetworks.algorithmics.ActivationFunction;
+import neuralNetworks.constants.enums.ActivationFunctionTypes;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,8 +13,10 @@ import java.util.stream.Collectors;
 public class Network {
 
     private final List<Layer> layers;
+    private final ActivationFunction activationFunction;
 
-    public Network(Integer... layerSizes) {
+    public Network(ActivationFunctionTypes functionType, Integer... layerSizes) {
+        activationFunction = new ActivationFunction(functionType);
         layers = initLayers(Arrays.asList(layerSizes));
     }
 
@@ -56,6 +60,8 @@ public class Network {
     }
 
     private Vector calcNextValues(Matrix W, Vector a, Vector b) {
-        return new Vector(W.mul(a).sumObj(b));
+        return new Vector(new Vector(W.mul(a).sumObj(b)).stream()
+                .map(v -> activationFunction.process(v))
+                .collect(Collectors.toList()));
     }
 }

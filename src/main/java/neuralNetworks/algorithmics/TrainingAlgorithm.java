@@ -1,14 +1,11 @@
 package neuralNetworks.algorithmics;
 
-import neuralNetworks.constants.enums.TrainingAlgorithmTypes;
+import dataTypes.Data;
+import neuralNetworks.objects.Layer;
 
-import java.util.HashMap;
+import java.util.Deque;
+import java.util.List;
 
-public class TrainingAlgorithm {
-
-    private final TrainingAlgorithmTypes algorithmType;
-
-    public TrainingAlgorithm(TrainingAlgorithmTypes algorithmType) {
-        this.algorithmType = algorithmType;
-    }
+public interface TrainingAlgorithm {
+    public Layer getCurrectLayer(Layer resultedLayer, Layer expectedLayer);
 }
