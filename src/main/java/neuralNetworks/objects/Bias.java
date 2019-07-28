@@ -37,8 +37,4 @@ public class Bias implements Value<Double> {
         set(bias - arg);
         return this;
     }
-
-    public Weight toWeight() {
-        return new Weight(bias);
-    }
 }

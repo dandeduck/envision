@@ -100,13 +100,13 @@ public class Network {
 
     private Vector<Neuron> calcNextValues(Matrix<Weight> W, Vector<Neuron> a) {
         return new Vector<>(W.mulByVector(toWeights(a)).stream()
-                .map(v -> activationFunction.process(v.get().get()))
+                .map(v -> activationFunction.process(v))
                 .collect(Collectors.toList()));
     }
 
     private Vector<Weight> toWeights(Vector<Neuron> neurons) {
         return new Vector<>(neurons.stream()
-                .map(n -> n.get().toWeight())
+                .map(n -> new Weight(n))
                 .collect(Collectors.toList()));
     }
 }

@@ -1,5 +1,6 @@
 package neuralNetworks.algorithmics;
 
+import dataTypes.Value;
 import neuralNetworks.constants.enums.ActivationFunctionTypes;
 
 import java.util.HashMap;
@@ -25,8 +26,8 @@ public class ActivationFunction {
         functions.put(ActivationFunctionTypes.SOFTPLUS, this::useSoftplus);
     }
 
-    public double process(double preProcessValue) {
-        functions.get(funcType).accept(preProcessValue);
+    public double process(Value<Double> preProcessValue) {
+        functions.get(funcType).accept(preProcessValue.get());
         return processedValue;
     }
 

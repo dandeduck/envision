@@ -16,6 +16,10 @@ public class Weight implements Value<Double> {
         this(new Random().nextDouble() - new Random().nextDouble());
     }
 
+    public Weight(Value<Double> value) {
+        this(value.get());
+    }
+
     @Override
     public void set(Double arg) {
         weight = arg;
