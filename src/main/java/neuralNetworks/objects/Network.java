@@ -1,7 +1,6 @@
 package neuralNetworks.objects;
 
 
-import dataTypes.Matrix;
 import dataTypes.Vector;
 import neuralNetworks.algorithmics.ActivationFunction;
 import neuralNetworks.constants.enums.ActivationFunctionTypes;

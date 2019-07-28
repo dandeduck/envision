@@ -21,7 +21,7 @@ public class Bias implements Value<Double> {
     }
 
     @Override
-    public Value add(Double arg) {
+    public Value sum(Double arg) {
         return bias + arg;
     }
 

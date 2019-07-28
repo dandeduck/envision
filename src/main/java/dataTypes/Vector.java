@@ -3,7 +3,7 @@ package dataTypes;
 import java.util.ArrayDeque;
 import java.util.Collection;
 
-public class Vector<V> extends ArrayDeque<Value> {
+public class Vector<V> extends ArrayDeque<Value> implements Value<Vector<V>>{
 
     private static final String ILLEGAL_VECTOR_EXCEPTION_MSG = "Vectors must be the same length for operations.";
 
@@ -15,7 +15,7 @@ public class Vector<V> extends ArrayDeque<Value> {
         Vector<V> tmp = new Vector<>(this);
         checkIfVectorValid(this,v);
         v.stream()
-                .forEach(e -> tmp.push(tmp.pop().add(v.pop())));
+                .forEach(e -> tmp.push(tmp.pop().sum(v.pop())));
 
         return tmp;
     }
@@ -29,6 +29,12 @@ public class Vector<V> extends ArrayDeque<Value> {
         return tmp;
     }
 
+    @Deprecated
+    @Override
+    public Value sub(Vector<V> arg) {
+        return null;
+    }
+
     private void checkIfVectorValid(Vector<V> v, Vector<V> v1) throws IllegalArgumentException{
         if(v.size() != v1.size())
             throw new IllegalArgumentException(ILLEGAL_VECTOR_EXCEPTION_MSG);
@@ -37,5 +43,10 @@ public class Vector<V> extends ArrayDeque<Value> {
     public void set(Vector<V> newVector) {
         this.clear();
         this.addAll(newVector);
+    }
+
+    @Override
+    public Vector<V> get() {
+        return this;
     }
 }
