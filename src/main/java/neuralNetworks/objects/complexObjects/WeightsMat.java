@@ -13,19 +13,19 @@ public class WeightsMat extends Matrix<Weight> {
         super(collection);
     }
 
-    public WeightsMat(int layerSize){
+    public WeightsMat(int layerSize, int nextLayerSize){
         super(null);
-        addAll(initWeightMatrix(layerSize+1));
+        addAll(initWeightMatrix(layerSize+1));//fix
     }
 
-    private Matrix<Weight> initWeightMatrix(int layerSize) {
+    private Matrix<Weight> initWeightMatrix(int layerSize, int nextLayerSize) {
         return new Matrix<>(IntStream.range(0, layerSize-1)
                 .mapToObj(v -> initWeightVector(layerSize))
                 .collect(Collectors.toList()));
     }
 
-    private Vector<Weight> initWeightVector(int layerSize) {
-        return new Vector<>(IntStream.range(0, layerSize-1)
+    private Vector<Weight> initWeightVector(int nextLayerSize) {
+        return new Vector<>(IntStream.range(0, nextLayerSize-1)
                 .mapToObj(w -> new Weight())
                 .collect(Collectors.toList()));
     }
