@@ -3,7 +3,7 @@ package dataTypes;
 import java.util.ArrayDeque;
 import java.util.Collection;
 
-public class Matrix extends ArrayDeque<Vector> {
+public class Matrix extends ArrayDeque<Vector<N>> {
 
     private static final String ILLEGAL_VECTOR_EXCEPTION_MSG = "Vectors must be the same length for operations.";
 
@@ -11,16 +11,16 @@ public class Matrix extends ArrayDeque<Vector> {
         this.addAll(collection);
     }
 
-    public Vector mul(Vector v) {
+    public Vector<N> mul(Vector<N> v) {
         checkIfVectorValid(this, v);
         ArrayDeque<Double> newVals = this.stream()
-                .mapToDouble(mv -> mv.mulObj(v).getSum())
+                .mapToDouble(mv -> mv.mul(v).getSum())
                 .collect(ArrayDeque::new, ArrayDeque::add, ArrayDeque::addAll);
 
-        return new Vector(newVals);
+        return new Vector<N>(newVals);
     }
 
-    private void checkIfVectorValid(Matrix m, Vector v) throws IllegalArgumentException{
+    private void checkIfVectorValid(Matrix m, Vector<N> v) throws IllegalArgumentException{
         if(m.size() != v.size())
             throw new IllegalArgumentException(ILLEGAL_VECTOR_EXCEPTION_MSG);
     }

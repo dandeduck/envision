@@ -3,7 +3,7 @@ package dataTypes;
 import java.util.ArrayDeque;
 import java.util.Collection;
 
-public class Vector extends ArrayDeque<Double> {
+public class Vector<V> extends ArrayDeque<Value> {
 
     private static final String ILLEGAL_VECTOR_EXCEPTION_MSG = "Vectors must be the same length for operations.";
 
@@ -11,38 +11,31 @@ public class Vector extends ArrayDeque<Double> {
         this.addAll(collection);
     }
 
-    public void sum(Vector v) {
+    public Vector<V> sum(Vector<V> v) {
+        Vector<V> tmp = new Vector<>(this);
         checkIfVectorValid(this,v);
         v.stream()
-                .forEach(e -> this.push(this.pop() + v.pop()));
+                .forEach(e -> tmp.push(tmp.pop().add(v.pop())));
+
+        return tmp;
     }
 
-    public Vector sumObj(Vector v) {
-        sum(v);
-
-        return this;
-    }
-
-    public void mul(Vector v) {
+    public Vector<V> mul(Vector<V> v) {
+        Vector<V> tmp = new Vector<>(this);
         checkIfVectorValid(this,v);
         v.stream()
-                .forEach(e -> this.push(this.pop() * v.pop()));
+                .forEach(e -> tmp.push(tmp.pop().mul(v.pop())));
+
+        return tmp;
     }
 
-    public Vector mulObj(Vector v) {
-        mul(v);
-
-        return this;
-    }
-
-    private void checkIfVectorValid(Vector v, Vector v1) throws IllegalArgumentException{
+    private void checkIfVectorValid(Vector<V> v, Vector<V> v1) throws IllegalArgumentException{
         if(v.size() != v1.size())
             throw new IllegalArgumentException(ILLEGAL_VECTOR_EXCEPTION_MSG);
     }
 
-    public double getSum() {
-        return this.stream()
-                .mapToDouble(e->e)
-                .sum();
+    public void set(Vector<V> newVector) {
+        this.clear();
+        this.addAll(newVector);
     }
 }

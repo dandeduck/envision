@@ -13,11 +13,13 @@ import java.util.stream.Collectors;
 public class Network {
 
     private final List<Layer> layers;
+
     private final ActivationFunction activationFunction;
 
     public Network(ActivationFunctionTypes functionType, Integer... layerSizes) {
         activationFunction = new ActivationFunction(functionType);
         layers = initLayers(Arrays.asList(layerSizes));
+        weightMarices
     }
 
     private List<Layer> initLayers(List<Integer> layerSizes) {
@@ -26,16 +28,18 @@ public class Network {
                 .collect(Collectors.toList());
     }
 
-    private Matrix
+    private List<Matrix> initWeightMarices() {
 
-    private void feedFarward(Vector input) {
+    }
+
+    private void feedFarward(Vector<N> input) {
         updateInputNeurons(input);
         layers.stream()
                 .skip(1)
                 .forEach(l -> feedNextLayer(getPrevLayer(layers,l),l));
     }
 
-    private void updateInputNeurons(Vector input) {
+    private void updateInputNeurons(Vector<N> input) {
         layers.get(0).updateLayer(input);
     }
 
@@ -46,14 +50,14 @@ public class Network {
 
     private void feedNextLayer(Layer prevLayer, Layer nextLayer) {
         Matrix WeightsMat = prevLayer.getWeightsMat();
-        Vector prevValues = prevLayer.getValues();
-        Vector biases = nextLayer.getBiases();
+        Vector<N> prevValues = prevLayer.getValues();
+        Vector<N> biases = nextLayer.getBiases();
 
         nextLayer.updateLayer(calcNextValues(WeightsMat, prevValues, biases));
     }
 
-    private Vector calcNextValues(Matrix W, Vector a, Vector b) {
-        return new Vector(new Vector(W.mul(a).sumObj(b)).stream()
+    private Vector<N> calcNextValues(Matrix W, Vector<N> a, Vector<N> b) {
+        return new Vector<N>(new Vector<N>(W.mul(a).sum(b)).stream()
                 .map(v -> activationFunction.process(v))
                 .collect(Collectors.toList()));
     }
