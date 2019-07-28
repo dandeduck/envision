@@ -1,6 +1,7 @@
 package neuralNetworks.objects;
 
 
+import dataTypes.Matrix;
 import dataTypes.Vector;
 import neuralNetworks.algorithmics.ActivationFunction;
 import neuralNetworks.constants.enums.ActivationFunctionTypes;
@@ -8,17 +9,22 @@ import neuralNetworks.constants.enums.ActivationFunctionTypes;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Network {
 
     private final List<Layer> layers;
+    private final List<Matrix<Weight>> weightMatrices;
+    private final List<Vector<Bias>> biasVectors;
 
     private final ActivationFunction activationFunction;
 
     public Network(ActivationFunctionTypes functionType, Integer... layerSizes) {
         activationFunction = new ActivationFunction(functionType);
+
         layers = initLayers(Arrays.asList(layerSizes));
-        weightMarices
+        weightMatrices = initWeightMatrices(Arrays.asList(layerSizes));
+        biasVectors = initBiasVectors(Arrays.asList(layerSizes));
     }
 
     private List<Layer> initLayers(List<Integer> layerSizes) {
@@ -27,18 +33,44 @@ public class Network {
                 .collect(Collectors.toList());
     }
 
-    private List<Matrix> initWeightMarices() {
-
+    private List<Matrix<Weight>> initWeightMatrices(List<Integer> layerSizes) {
+        return IntStream.range(1, layerSizes.size()-1)
+                .mapToObj(m -> initWeightMatrix(layerSizes.get(m)))
+                .collect(Collectors.toList());
     }
 
-    private void feedFarward(Vector<N> input) {
+    private Matrix<Weight> initWeightMatrix(int layerSize) {
+        return new Matrix<>(IntStream.range(0, layerSize-1)
+                .mapToObj(v -> initWeightVector(layerSize))
+                .collect(Collectors.toList()));
+    }
+
+    private Vector<Weight> initWeightVector(int layerSize) {
+        return new Vector<>(IntStream.range(0, layerSize-1)
+                .mapToObj(w -> new Weight())
+                .collect(Collectors.toList()));
+    }
+
+    private List<Vector<Bias>> initBiasVectors(List<Integer> layerSizes) {
+        return IntStream.range(1, layerSizes.size()-1)
+                .mapToObj(v -> initBiasVector(layerSizes.get(v)))
+                .collect(Collectors.toList());
+    }
+
+    private Vector<Bias> initBiasVector(int layerSize) {
+        return new Vector<>(IntStream.range(0, layerSize-1)
+                .mapToObj(b -> new Bias())
+                .collect(Collectors.toList()));
+    }
+
+    private void feedFarward(Vector<Neuron> input) {
         updateInputNeurons(input);
         layers.stream()
                 .skip(1)
                 .forEach(l -> feedNextLayer(getPrevLayer(layers,l),l));
     }
 
-    private void updateInputNeurons(Vector<N> input) {
+    private void updateInputNeurons(Vector<Neuron> input) {
         layers.get(0).updateLayer(input);
     }
 
@@ -48,16 +80,56 @@ public class Network {
 
 
     private void feedNextLayer(Layer prevLayer, Layer nextLayer) {
-        Matrix WeightsMat = prevLayer.getWeightsMat();
-        Vector<N> prevValues = prevLayer.getValues();
-        Vector<N> biases = nextLayer.getBiases();
+        Matrix WeightsMat = getCorrespondingWeights(nextLayer);
+        Vector<Neuron> prevValues = prevLayer.getValues();
+        Vector<Bias> biases = getCorrespondingBiases(nextLayer);
 
         nextLayer.updateLayer(calcNextValues(WeightsMat, prevValues, biases));
     }
 
-    private Vector<N> calcNextValues(Matrix W, Vector<N> a, Vector<N> b) {
-        return new Vector<N>(new Vector<N>(W.mul(a).sum(b)).stream()
-                .map(v -> activationFunction.process(v))
+    private Matrix<Weight> getCorrespondingWeights(Layer layer){
+        try {
+            checkIfLayerHasCorrespondingWeights(layer);
+        } catch (NoCorrespondingWeightsException e) {
+            e.printStackTrace();
+        }
+        return weightMatrices.get(layers.indexOf(layer)-1);
+    }
+
+    private void checkIfLayerHasCorrespondingWeights(Layer layer) throws NoCorrespondingWeightsException {
+        if(layers.indexOf(layer) == 0)
+            throw new NoCorrespondingWeightsException(NoCorrespondingWeightsException.EXCEPTION_MSG);
+    }
+
+    private Vector<Bias> getCorrespondingBiases(Layer layer){
+        try {
+            checkIfLayerHasCorrespondingBiases(layer);
+        } catch (NoCorrespondingBiasesException e) {
+            e.printStackTrace();
+        }
+        return biasVectors.get(layers.indexOf(layer)-1);
+    }
+
+    private void checkIfLayerHasCorrespondingBiases(Layer layer) throws NoCorrespondingBiasesException {
+        if(layers.indexOf(layer) == 0)
+            throw new NoCorrespondingBiasesException(NoCorrespondingBiasesException.EXCEPTION_MSG);
+    }
+
+    private Vector<Neuron> calcNextValues(Matrix<Weight> W, Vector<Neuron> a, Vector<Bias> b) {
+        return new Vector<>(W.mulByVector(toWeights(a)).sum(toBiases(b)).stream()
+                .map(v -> activationFunction.process(v.get().get()))
+                .collect(Collectors.toList()));
+    }
+
+    private Vector<Weight> toWeights(Vector<Neuron> neurons) {
+        return new Vector<>(neurons.stream()
+                .map(n -> n.get().toWeight())
+                .collect(Collectors.toList()));
+    }
+
+    private Vector<Weight> toBiases(Vector<Bias> biases) {
+        return new Vector<>(biases.stream()
+                .map(n -> n.get().toWeight())
                 .collect(Collectors.toList()));
     }
 }

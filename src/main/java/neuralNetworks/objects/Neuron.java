@@ -37,4 +37,8 @@ public class Neuron implements Value<Double> {
         set(val - arg);
         return this;
     }
+
+    public Weight toWeight() {
+        return new Weight(val);
+    }
 }

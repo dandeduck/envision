@@ -2,12 +2,18 @@ package neuralNetworks.objects;
 
 import dataTypes.Value;
 
+import java.util.Random;
+
 public class Weight implements Value<Double> {
 
     private double weight;
 
+    public Weight(double weight) {
+        this.weight = weight;
+    }
+
     public Weight() {
-        set(1.0);
+        this(new Random().nextDouble() - new Random().nextDouble());
     }
 
     @Override
@@ -22,16 +28,19 @@ public class Weight implements Value<Double> {
 
     @Override
     public Value sum(Double arg) {
-        return weight + arg;
+        set(weight + arg);
+        return this;
     }
 
     @Override
     public Value mul(Double arg) {
-        return weight * arg;
+        set(weight * arg);
+        return this;
     }
 
     @Override
-    public Double sub(Double arg) {
-        return weight - arg;
+    public Value sub(Double arg) {
+        set(weight - arg);
+        return this;
     }
 }

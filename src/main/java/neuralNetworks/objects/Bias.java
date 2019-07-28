@@ -22,16 +22,23 @@ public class Bias implements Value<Double> {
 
     @Override
     public Value sum(Double arg) {
-        return bias + arg;
+        set(bias + arg);
+        return this;
     }
 
     @Override
     public Value mul(Double arg) {
-        return bias * arg;
+        set(bias * arg);
+        return this;
     }
 
     @Override
-    public Double sub(Double arg) {
-        return bias - arg;
+    public Value sub(Double arg) {
+        set(bias - arg);
+        return this;
+    }
+
+    public Weight toWeight() {
+        return new Weight(bias);
     }
 }
