@@ -1,6 +1,6 @@
 package neuralNetworks.algorithmics;
 
-import neuralNetworks.objects.Layer;
+import neuralNetworks.objects.complexObjects.Layer;
 
 import java.util.ArrayList;
 import java.util.List;

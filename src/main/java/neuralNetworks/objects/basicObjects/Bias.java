@@ -1,4 +1,4 @@
-package neuralNetworks.objects;
+package neuralNetworks.objects.basicObjects;
 
 import dataTypes.Value;
 

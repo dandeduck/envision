@@ -1,6 +1,7 @@
-package neuralNetworks.objects;
+package neuralNetworks.objects.complexObjects;
 
 import dataTypes.Vector;
+import neuralNetworks.objects.basicObjects.Neuron;
 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
