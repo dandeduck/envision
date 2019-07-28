@@ -3,8 +3,7 @@ package dataTypes;
 import java.util.ArrayDeque;
 import java.util.Collection;
 
-public class Vector<V> extends ArrayDeque<Value<V>> implements Value<Vector<V>>{
-
+public class Vector<V> extends ArrayDeque<Value> implements Value<Vector<V>>{
     private static final String ILLEGAL_VECTOR_EXCEPTION_MSG = "Vectors must be the same length for operations.";
 
     public Vector(Collection collection) {
@@ -53,11 +52,11 @@ public class Vector<V> extends ArrayDeque<Value<V>> implements Value<Vector<V>>{
         return this;
     }
 
-    public Value<V> getSum() {
-        Value<V> sum = this.getFirst();
+    public Value getSum() {
+        Value sum = this.getFirst();
 
         this.stream()
-                .forEach(v -> sum.set((V) sum.sum(v.get()).get()));//OK?
+                .forEach(v -> sum.set(sum.sum(v).get()));
 
         return sum;
     }

@@ -6,8 +6,12 @@ public class Neuron implements Value<Double> {
 
     private double val;
 
-    public Neuron() {
+    public Neuron(double val) {
         set(val);
+    }
+
+    public Neuron() {
+        this(0);
     }
 
     @Override

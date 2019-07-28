@@ -15,7 +15,6 @@ public class Network {
 
     private final List<Layer> layers;
     private final List<Matrix<Weight>> weightMatrices;
-    private final List<Vector<Bias>> biasVectors;
 
     private final ActivationFunction activationFunction;
 
@@ -24,7 +23,6 @@ public class Network {
 
         layers = initLayers(Arrays.asList(layerSizes));
         weightMatrices = initWeightMatrices(Arrays.asList(layerSizes));
-        biasVectors = initBiasVectors(Arrays.asList(layerSizes));
     }
 
     private List<Layer> initLayers(List<Integer> layerSizes) {
@@ -82,9 +80,8 @@ public class Network {
     private void feedNextLayer(Layer prevLayer, Layer nextLayer) {
         Matrix WeightsMat = getCorrespondingWeights(nextLayer);
         Vector<Neuron> prevValues = prevLayer.getValues();
-        Vector<Bias> biases = getCorrespondingBiases(nextLayer);
 
-        nextLayer.updateLayer(calcNextValues(WeightsMat, prevValues, biases));
+        nextLayer.updateLayer(calcNextValues(WeightsMat, prevValues));
     }
 
     private Matrix<Weight> getCorrespondingWeights(Layer layer){
@@ -101,34 +98,14 @@ public class Network {
             throw new NoCorrespondingWeightsException(NoCorrespondingWeightsException.EXCEPTION_MSG);
     }
 
-    private Vector<Bias> getCorrespondingBiases(Layer layer){
-        try {
-            checkIfLayerHasCorrespondingBiases(layer);
-        } catch (NoCorrespondingBiasesException e) {
-            e.printStackTrace();
-        }
-        return biasVectors.get(layers.indexOf(layer)-1);
-    }
-
-    private void checkIfLayerHasCorrespondingBiases(Layer layer) throws NoCorrespondingBiasesException {
-        if(layers.indexOf(layer) == 0)
-            throw new NoCorrespondingBiasesException(NoCorrespondingBiasesException.EXCEPTION_MSG);
-    }
-
-    private Vector<Neuron> calcNextValues(Matrix<Weight> W, Vector<Neuron> a, Vector<Bias> b) {
-        return new Vector<>(W.mulByVector(toWeights(a)).sum(toBiases(b)).stream()
+    private Vector<Neuron> calcNextValues(Matrix<Weight> W, Vector<Neuron> a) {
+        return new Vector<>(W.mulByVector(toWeights(a)).stream()
                 .map(v -> activationFunction.process(v.get().get()))
                 .collect(Collectors.toList()));
     }
 
     private Vector<Weight> toWeights(Vector<Neuron> neurons) {
         return new Vector<>(neurons.stream()
-                .map(n -> n.get().toWeight())
-                .collect(Collectors.toList()));
-    }
-
-    private Vector<Weight> toBiases(Vector<Bias> biases) {
-        return new Vector<>(biases.stream()
                 .map(n -> n.get().toWeight())
                 .collect(Collectors.toList()));
     }

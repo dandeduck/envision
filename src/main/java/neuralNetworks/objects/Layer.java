@@ -10,7 +10,7 @@ public class Layer {
     private final Vector<Neuron> neurons;
 
     public Layer(int size) {
-        neurons = initNeurons(size);
+        neurons = initNeurons(size+1);
     }
 
     private Vector<Neuron> initNeurons(int size) {
@@ -23,12 +23,14 @@ public class Layer {
         return neurons;
     }
 
-    public int getLayerSize() {
-        return neurons.size();
+    private void resetBias() {
+        neurons.removeLast();
+        neurons.add(new Neuron(1.0));
     }
 
     public void updateLayer(Vector<Neuron> newValues) {
         neurons.clear();
         neurons.addAll(newValues);
+        resetBias();
     }
 }

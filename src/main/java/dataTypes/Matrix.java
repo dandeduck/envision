@@ -1,9 +1,10 @@
 package dataTypes;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class Matrix<V> extends Vector<Vector<V>> {
+public class Matrix<V> extends ArrayDeque<Vector<V>> {
 
     private static final String ILLEGAL_VECTOR_EXCEPTION_MSG = "Vector must be the same length as the matrix for operations.";
 
