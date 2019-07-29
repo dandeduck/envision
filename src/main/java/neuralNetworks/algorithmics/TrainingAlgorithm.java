@@ -1,7 +1,10 @@
 package neuralNetworks.algorithmics;
 
 import neuralNetworks.objects.complexObjects.Layer;
+import neuralNetworks.objects.complexObjects.WeightsMat;
+
+import java.util.List;
 
 public interface TrainingAlgorithm {
-    public Layer getCurrectLayer(Layer resultedLayer, Layer expectedLayer);
+    public WeightsMat getWightChanges(Layer inputLayer, Layer resultedLayer, Layer expectedLayer, WeightsMat correspondingWeights);
 }

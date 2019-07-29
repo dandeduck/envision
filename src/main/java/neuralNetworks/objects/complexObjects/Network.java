@@ -1,16 +1,17 @@
 package neuralNetworks.objects.complexObjects;
 
 
+import dataTypes.Data;
 import dataTypes.Matrix;
 import dataTypes.Vector;
 import neuralNetworks.algorithmics.ActivationFunction;
 import neuralNetworks.constants.enums.ActivationFunctionTypes;
 import neuralNetworks.objects.exception.NoCorrespondingWeightsException;
-import neuralNetworks.objects.basicObjects.Bias;
 import neuralNetworks.objects.basicObjects.Neuron;
 import neuralNetworks.objects.basicObjects.Weight;
 
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -93,5 +94,12 @@ public class Network {
         return new Vector<>(neurons.stream()
                 .map(n -> new Weight(n))
                 .collect(Collectors.toList()));
+    }
+
+    private Vector<Neuron> transformDataPoint(Deque dataPoint) {
+        Vector<Neuron> tmp = new Vector<>(dataPoint);
+        tmp.add(new Neuron());
+
+        return tmp;
     }
 }

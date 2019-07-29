@@ -10,6 +10,10 @@ public class Neuron implements Value<Double> {
         set(val);
     }
 
+    public Neuron(Value<Double> val) {
+        this(val.get());
+    }
+
     public Neuron() {
         this(0);
     }
@@ -25,19 +29,19 @@ public class Neuron implements Value<Double> {
     }
 
     @Override
-    public Value sum(Double arg) {
+    public Neuron sum(Double arg) {
         set(val + arg);
         return this;
     }
 
     @Override
-    public Value mul(Double arg) {
+    public Neuron mul(Double arg) {
         set(val * arg);
         return this;
     }
 
     @Override
-    public Value sub(Double arg) {
+    public Neuron sub(Double arg) {
         set(val - arg);
         return this;
     }

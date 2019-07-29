@@ -1,9 +1,11 @@
 package dataTypes;
 
-import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-public class Vector<V> extends ArrayDeque<Value> implements Value<Vector<V>>{
+public class Vector<V> extends ArrayList<Value> implements Value<Vector<V>>{
     private static final String ILLEGAL_VECTOR_EXCEPTION_MSG = "Vectors must be the same length for operations.";
 
     public Vector(Collection collection) {
@@ -12,27 +14,23 @@ public class Vector<V> extends ArrayDeque<Value> implements Value<Vector<V>>{
 
     @Override
     public Vector<V> sum(Vector<V> v) {
-        Vector<V> tmp = new Vector<>(this);
         checkIfVectorValid(this,v);
-        v.stream()
-                .forEach(e -> tmp.push(tmp.pop().sum(v.pop().get())));
-
-        return tmp;
+        return new Vector<>(IntStream.range(0, v.size()-1)
+                .mapToObj(e -> v.get(e).sum(this.get(e)))
+                .collect(Collectors.toList()));
     }
 
     @Override
     public Vector<V> mul(Vector<V> v) {
-        Vector<V> tmp = new Vector<>(this);
         checkIfVectorValid(this,v);
-        v.stream()
-                .forEach(e -> tmp.push(tmp.pop().mul(v.pop().get())));
-
-        return tmp;
+        return new Vector<>(IntStream.range(0, v.size()-1)
+                .mapToObj(e -> v.get(e).mul(this.get(e)))
+                .collect(Collectors.toList()));
     }
 
     @Deprecated
     @Override
-    public Value sub(Vector<V> arg) {
+    public Vector<V> sub(Vector<V> arg) {
         return null;
     }
 
@@ -53,9 +51,10 @@ public class Vector<V> extends ArrayDeque<Value> implements Value<Vector<V>>{
     }
 
     public Value getSum() {
-        Value sum = this.getFirst();
+        Value sum = this.get(0);
 
         this.stream()
+                .skip(1)
                 .forEach(v -> sum.set(sum.sum(v).get()));
 
         return sum;
