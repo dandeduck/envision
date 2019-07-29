@@ -15,12 +15,12 @@ public class WeightsMat extends Matrix<Weight> {
 
     public WeightsMat(int layerSize, int nextLayerSize){
         super(null);
-        addAll(initWeightMatrix(layerSize+1));//fix
+        addAll(initWeightMatrix(layerSize+1, nextLayerSize+1));
     }
 
     private Matrix<Weight> initWeightMatrix(int layerSize, int nextLayerSize) {
         return new Matrix<>(IntStream.range(0, layerSize-1)
-                .mapToObj(v -> initWeightVector(layerSize))
+                .mapToObj(v -> initWeightVector(nextLayerSize))
                 .collect(Collectors.toList()));
     }
 

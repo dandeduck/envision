@@ -9,13 +9,23 @@ import java.util.stream.IntStream;
 public class Layer {
 
     private final Vector<Neuron> neurons;
+    private final double bias;
+
+    public Layer(int size, double bias) {
+        neurons = initNeurons(size+1);
+        this.bias = bias;
+    }
+
+    public Layer(int size, boolean hasBias) {
+        this(size, hasBias ? 1.0 : 0.0);
+    }
 
     public Layer(int size) {
-        neurons = initNeurons(size+1);
+        this(size, 1.0);
     }
 
     private Vector<Neuron> initNeurons(int size) {
-        return new Vector<Neuron>(IntStream.range(1, size)
+        return new Vector<>(IntStream.range(1, size)
                 .mapToObj(n -> new Neuron())
                 .collect(Collectors.toList()));
     }
@@ -26,7 +36,7 @@ public class Layer {
 
     private void resetBias() {
         neurons.removeLast();
-        neurons.add(new Neuron(1.0));
+        neurons.add(new Neuron(bias));
     }
 
     public void updateLayer(Vector<Neuron> newValues) {

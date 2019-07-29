@@ -31,14 +31,19 @@ public class Network {
 
     private List<Layer> initLayers(List<Integer> layerSizes) {
         return layerSizes.stream()
-                .map(l -> new Layer(l))
+                .map(l -> layerSizes.indexOf(l) == 0 ? new Layer(l,false) : new Layer(l))
                 .collect(Collectors.toList());
     }
 
     private List<WeightsMat> initWeightMatrices(List<Integer> layerSizes) {
-        return IntStream.range(1, layerSizes.size()-1)
-                .mapToObj(m -> new WeightsMat(layerSizes.get(m)))
+        return IntStream.range(1, layerSizes.size())
+                .skip(1)
+                .mapToObj(m -> new WeightsMat(getPrevInt(layerSizes, m), layerSizes.get(m)))
                 .collect(Collectors.toList());
+    }
+
+    private int getPrevInt(List<Integer> list, int curr) {
+        return list.get(list.indexOf(curr)-1);
     }
 
     private void feedFarward(Vector<Neuron> input) {
