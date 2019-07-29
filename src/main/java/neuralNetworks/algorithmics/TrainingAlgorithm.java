@@ -6,5 +6,5 @@ import neuralNetworks.objects.complexObjects.WeightsMat;
 import java.util.List;
 
 public interface TrainingAlgorithm {
-    public WeightsMat getWightChanges(Layer inputLayer, Layer resultedLayer, Layer expectedLayer, WeightsMat correspondingWeights);
+    public WeightsMat getCorrectedWeights(Layer inputLayer, Layer resultedLayer, Layer expectedLayer, WeightsMat correspondingWeights);
 }

@@ -18,7 +18,7 @@ public class BackPropagation implements TrainingAlgorithm {
     }
 
     @Override
-    public WeightsMat getWightChanges(Layer inputLayer,Layer resultedLayer, Layer expectedLayer, WeightsMat correspondingWeights) {
+    public WeightsMat getCorrectedWeights(Layer inputLayer,Layer resultedLayer, Layer expectedLayer, WeightsMat correspondingWeights) {
         List<Double> errors = calcOutputErrors(resultedLayer, expectedLayer);
 
         return new WeightsMat(correspondingWeights.stream()
