@@ -5,11 +5,14 @@ import dataTypes.Data;
 import dataTypes.Matrix;
 import dataTypes.Vector;
 import neuralNetworks.algorithmics.ActivationFunction;
+import neuralNetworks.algorithmics.BackPropagation;
+import neuralNetworks.algorithmics.TrainingAlgorithm;
 import neuralNetworks.constants.enums.ActivationFunctionTypes;
 import neuralNetworks.objects.exception.NoCorrespondingWeightsException;
 import neuralNetworks.objects.basicObjects.Neuron;
 import neuralNetworks.objects.basicObjects.Weight;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
@@ -20,14 +23,18 @@ public class Network {
 
     private final List<Layer> layers;
     private final List<WeightsMat> weightMatrices;
+    private final Data outputPattern;
 
     private final ActivationFunction activationFunction;
+    private final TrainingAlgorithm trainingAlgorithm;
 
-    public Network(ActivationFunctionTypes functionType, Integer... layerSizes) {
+    public Network(Data outputPattern, ActivationFunctionTypes functionType, double learningRate, Integer... layerSizes) {//in the future change Data to List<Data> and get TrainingAlgorithm or Enum of it
+        this.outputPattern = outputPattern;
         activationFunction = new ActivationFunction(functionType);
 
         layers = initLayers(Arrays.asList(layerSizes));
         weightMatrices = initWeightMatrices(Arrays.asList(layerSizes));
+        trainingAlgorithm = new BackPropagation(learningRate, 0.01);
     }
 
     private List<Layer> initLayers(List<Integer> layerSizes) {
@@ -41,6 +48,18 @@ public class Network {
                 .skip(1)
                 .mapToObj(m -> new WeightsMat(getPrevInt(layerSizes, m), layerSizes.get(m)))
                 .collect(Collectors.toList());
+    }
+
+    public void train() {
+        while (trainingAlgorithm.hasLearned(layers.get(layers.size()-1), outputPattern)) {
+            feedFarward(new Vector<>(outputPattern.getInputPoints()));
+            replaceWeights(trainingAlgorithm.computeOutputPattern(layers, weightMatrices, outputPattern));
+        }
+    }
+
+    private void replaceWeights(List<WeightsMat> newWeights) {
+        weightMatrices.clear();
+        weightMatrices.addAll(newWeights);
     }
 
     private int getPrevInt(List<Integer> list, int curr) {
@@ -65,7 +84,7 @@ public class Network {
 
     private void feedNextLayer(Layer prevLayer, Layer nextLayer) {
         Matrix WeightsMat = getCorrespondingWeights(nextLayer);
-        Vector<Neuron> prevValues = prevLayer.getValues();
+        Vector<Neuron> prevValues = prevLayer.getNeurons();
 
         nextLayer.updateLayer(calcNextValues(WeightsMat, prevValues));
     }

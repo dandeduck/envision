@@ -30,7 +30,7 @@ public class Layer {
                 .collect(Collectors.toList()));
     }
 
-    public Vector<Neuron> getValues() {
+    public Vector<Neuron> getNeurons() {
         return neurons;
     }
 

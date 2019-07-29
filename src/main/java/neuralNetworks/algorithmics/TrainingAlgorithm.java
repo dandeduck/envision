@@ -1,10 +1,12 @@
 package neuralNetworks.algorithmics;
 
+import dataTypes.Data;
 import neuralNetworks.objects.complexObjects.Layer;
 import neuralNetworks.objects.complexObjects.WeightsMat;
 
 import java.util.List;
 
 public interface TrainingAlgorithm {
-    public WeightsMat getCorrectedWeights(Layer inputLayer, Layer resultedLayer, Layer expectedLayer, WeightsMat correspondingWeights);
+    List<WeightsMat> computeOutputPattern(List<Layer> layers, List<WeightsMat> weightMats, Data outputPattern);
+    boolean hasLearned(Layer outputLayer, Data outputPattern);
 }

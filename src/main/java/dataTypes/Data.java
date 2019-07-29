@@ -1,16 +1,16 @@
 package dataTypes;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Data<T> {
+public class Data {
 
     private static final String ILLEGAL_DATA_MSG = "There must be the same number of input and output data points";
 
-    private Deque<T> input;
-    private Deque<T> output;
+    private List<Double> input;
+    private List<Double> output;
 
-    public Data(Deque<T> input, Deque<T> output) {
+    public Data(List<Double> input, List<Double> output) {
         this.input = input;
         this.output = output;
 
@@ -18,16 +18,32 @@ public class Data<T> {
     }
 
     public Data(int inputSize, int outputSize) {
-        this(new ArrayDeque<>(inputSize),new ArrayDeque<>(outputSize));
+        this(new ArrayList<>(inputSize),new ArrayList<>(outputSize));
     }
 
-    public void dataPoint(T inputPoint, T outputPoint) {
+    public double getInputPoint(int index) {
+        return input.get(index);
+    }
+
+    public double getOutputPoint(int index) {
+        return output.get(index);
+    }
+
+    public void addDataPoint(double inputPoint, double outputPoint) {
         input.add(inputPoint);
         output.add(outputPoint);
     }
 
-    private void checkIfDataValid(Deque input, Deque output) throws IllegalArgumentException {
+    private void checkIfDataValid(List input, List output) throws IllegalArgumentException {
         if(input.size() != output.size())
             throw new IllegalArgumentException(ILLEGAL_DATA_MSG);
+    }
+
+    public List<Double> getInputPoints() {
+        return input;
+    }
+
+    public List<Double> getOutputPoints() {
+        return output;
     }
 }
