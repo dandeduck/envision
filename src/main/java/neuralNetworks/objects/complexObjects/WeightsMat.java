@@ -22,8 +22,8 @@ public class WeightsMat extends Matrix<Weight> {
     }
 
     private WeightsMat initWeightMatrix(int layerSize, int nextLayerSize) {
-        return new WeightsMat(IntStream.range(0, layerSize)
-                .mapToObj(v -> initWeightVector(nextLayerSize))
+        return new WeightsMat(IntStream.range(0, nextLayerSize)
+                .mapToObj(v -> initWeightVector(layerSize))
                 .collect(Collectors.toList()));
     }
 

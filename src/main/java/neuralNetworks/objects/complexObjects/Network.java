@@ -8,7 +8,6 @@ import neuralNetworks.algorithmics.TrainingAlgorithm;
 import neuralNetworks.constants.enums.ActivationFunctionTypes;
 import neuralNetworks.objects.exception.NoCorrespondingWeightsException;
 import neuralNetworks.objects.basicObjects.Neuron;
-import neuralNetworks.objects.basicObjects.Weight;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,8 +30,6 @@ public class Network {
         layers = initLayers(Arrays.asList(layerSizes));
         weightMatrices = initWeightMatrices();
         trainingAlgorithm = new BackPropagation(learningRate, 0.01);
-        System.out.println(layers.toString());
-        System.out.println();
     }
 
     private List<Layer> initLayers(List<Integer> layerSizes) {
@@ -50,8 +47,7 @@ public class Network {
 
     public void train() {
          do {
-             feedFarward(outputPattern.getInputPoints());
-             System.out.println(layers.toString());
+             feedFarward(outputPattern.getInputPointsAsNeurons());
              replaceWeights(trainingAlgorithm.computeOutputPattern(layers, weightMatrices, outputPattern));
         } while (trainingAlgorithm.hasLearned(layers.get(layers.size()-1), outputPattern));
     }
@@ -94,8 +90,9 @@ public class Network {
     }
 
     private Vector<Neuron> calcNextValues(WeightsMat W, Vector<Neuron> a) {
-        return new Vector<>(W.mulByNeurons(a).stream()
+        return W.mulByNeurons(a).stream()
                 .map(activationFunction::process)
-                .collect(Collectors.toList()));
+                .map(Neuron::new)
+                .collect(Collectors.toCollection(Vector::new));
     }
 }

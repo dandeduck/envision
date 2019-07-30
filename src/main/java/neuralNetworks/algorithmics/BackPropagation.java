@@ -8,6 +8,7 @@ import neuralNetworks.objects.complexObjects.Layer;
 import neuralNetworks.objects.complexObjects.WeightsMat;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,18 +27,23 @@ public class BackPropagation implements TrainingAlgorithm {
     @Override
     public List<WeightsMat> computeOutputPattern(List<Layer> layers, List<WeightsMat> weightMats, Data outputPattern) {
         List<Double> errors = getOutputErrors(layers.get(layers.size()-1), outputPattern.getOutputPoints());
-        prepareForBackProp(layers, weightMats, outputPattern);
+
+        updateOutputLayer(layers, outputPattern);
+        reverseLayersAndWeights(layers, weightMats);
 
         List<WeightsMat> result = layers.stream()
                 .map(l -> layers.indexOf(l) == layers.size()-1 ? null : getCorrectedWeights(getNextLayer(layers, l), l, getCorrespondingWeights(weightMats, layers, l), errors))
                 .collect(Collectors.toList());
-        Collections.reverse(weightMats);
+        reverseLayersAndWeights(layers, weightMats);
 
         return result;
     }
 
-    private void prepareForBackProp(List<Layer> layers, List<WeightsMat> weightMats, Data outputPattern) {
-        layers.get(layers.size()-1).updateLayer(outputPattern.getOutputPoints());
+    private void updateOutputLayer(List<Layer> layers, Data outputPattern) {
+        layers.get(layers.size()-1).updateLayer(outputPattern.getOutputPointsAsNeurons());
+    }
+
+    private void reverseLayersAndWeights(List<Layer> layers, List<WeightsMat> weightMats) {
         Collections.reverse(layers);
         Collections.reverse(weightMats);
     }
@@ -69,9 +75,9 @@ public class BackPropagation implements TrainingAlgorithm {
                     .collect(Collectors.toList()));
     }
 
-    private List<Double> getOutputErrors(Layer resultedLayer, Vector<Neuron> expectedLayer) {
+    private List<Double> getOutputErrors(Layer resultedLayer, List<Double> expectedLayer) {
         return IntStream.range(0, expectedLayer.size())
-                .mapToDouble(v -> (Double) expectedLayer.get(v).sub(resultedLayer.getNeuron(v)).get())//OK?
+                .mapToDouble(v -> expectedLayer.get(v) - resultedLayer.getNeuron(v).get())
                 .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
     }
 

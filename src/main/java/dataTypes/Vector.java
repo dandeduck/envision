@@ -28,7 +28,7 @@ public class Vector<V> extends ArrayList<Value> implements Value<Vector<V>>{
     public Vector<V> mul(Vector<V> v) {
         checkIfVectorValid(this,v);
         return IntStream.range(0, v.size())
-                .mapToObj(e -> v.get(e).mul(this.get(e)))
+                .mapToObj(e -> v.get(e).mul(this.get(e).get()))
                 .collect(Collectors.toCollection(Vector::new));
     }
 
@@ -58,8 +58,8 @@ public class Vector<V> extends ArrayList<Value> implements Value<Vector<V>>{
         Value sum = this.get(0);
 
         this.stream()
-                .skip(0)
-                .forEach(v -> sum.set(sum.sum(v).get()));
+                .skip(1)
+                .forEach(v -> sum.set(sum.sum(v.get()).get()));
 
         return sum;
     }

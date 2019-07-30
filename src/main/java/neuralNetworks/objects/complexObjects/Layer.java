@@ -42,16 +42,8 @@ public class Layer {
     }
 
     public void updateLayer(Vector<Neuron> newValues) {
-        System.out.println(toString());
-        for (Object n: neurons) {
-            System.out.println(n.getClass());
-        }
         neurons.clear();
         neurons.addAll(newValues);
-        for (Object n: neurons) {
-            System.out.println(n.getClass());
-        }
-        System.out.println(toString());
         resetBias();
     }
 

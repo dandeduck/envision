@@ -60,14 +60,28 @@ public class Data {
             throw new IllegalArgumentException(ILLEGAL_DATA_MSG);
     }
 
-    public Vector<Neuron> getInputPoints() {
+    public List<Double> getInputPoints() {
+        return input;
+    }
+
+    public Vector<Neuron> getInputPointsAsNeurons() {
         return input.stream()
                 .map(Neuron::new)
                 .collect(Collectors.toCollection(Vector::new));
+
     }
 
-    public Vector<Neuron> getOutputPoints() {
-        return output.stream()
+    public List<Double> getOutputPoints() {
+        List<Double> tmp = new ArrayList<>(output);
+        tmp.add(0.0);
+        return tmp;
+    }
+
+    public Vector<Neuron> getOutputPointsAsNeurons() {
+        List<Double> tmp = new ArrayList<>(output);
+        tmp.add(0.0);
+
+        return tmp.stream()
                 .map(Neuron::new)
                 .collect(Collectors.toCollection(Vector::new));
     }
