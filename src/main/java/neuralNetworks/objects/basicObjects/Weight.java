@@ -47,4 +47,14 @@ public class Weight implements Value<Double> {
         set(weight - arg);
         return this;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return weight == ((Value<Double>) obj).get();
+    }
+
+    @Override
+    public String toString() {
+        return Double.toString(weight);
+    }
 }

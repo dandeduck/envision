@@ -54,7 +54,7 @@ public class Vector<V> extends ArrayList<Value> implements Value<Vector<V>>{
         Value sum = this.get(0);
 
         this.stream()
-                .skip(1)
+                .skip(0)
                 .forEach(v -> sum.set(sum.sum(v).get()));
 
         return sum;

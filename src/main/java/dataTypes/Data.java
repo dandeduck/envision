@@ -1,7 +1,6 @@
 package dataTypes;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Data {
 
@@ -29,9 +28,28 @@ public class Data {
         return output.get(index);
     }
 
-    public void addDataPoint(double inputPoint, double outputPoint) {
+    public void addInput(double inputPoint) {
         input.add(inputPoint);
+    }
+
+    public void addOutput(double outputPoint) {
         output.add(outputPoint);
+    }
+
+    public void addInputs(List<Double> inputs) {
+        input.addAll(inputs);
+    }
+
+    public void addOutputs(List<Double> outputs) {
+        input.addAll(outputs);
+    }
+
+    public void addInputs(Double... inputs) {
+        addInputs(Arrays.asList(inputs));
+    }
+
+    public void addOutputs(Double... outputs) {
+        addOutputs(Arrays.asList(outputs));
     }
 
     private void checkIfDataValid(List input, List output) throws IllegalArgumentException {

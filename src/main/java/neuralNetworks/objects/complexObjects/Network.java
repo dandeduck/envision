@@ -3,6 +3,7 @@ package neuralNetworks.objects.complexObjects;
 
 import dataTypes.Data;
 import dataTypes.Matrix;
+import dataTypes.Value;
 import dataTypes.Vector;
 import neuralNetworks.algorithmics.ActivationFunction;
 import neuralNetworks.algorithmics.BackPropagation;
@@ -46,24 +47,21 @@ public class Network {
     private List<WeightsMat> initWeightMatrices(List<Integer> layerSizes) {
         return IntStream.range(1, layerSizes.size())
                 .skip(1)
-                .mapToObj(m -> new WeightsMat(getPrevInt(layerSizes, m), layerSizes.get(m)))
+                .mapToObj(m -> new WeightsMat(layerSizes.get(m-1), layerSizes.get(m)))
                 .collect(Collectors.toList());
     }
 
     public void train() {
-        while (trainingAlgorithm.hasLearned(layers.get(layers.size()-1), outputPattern)) {
-            feedFarward(new Vector<>(outputPattern.getInputPoints()));
-            replaceWeights(trainingAlgorithm.computeOutputPattern(layers, weightMatrices, outputPattern));
-        }
+         do {
+             System.out.println(layers.toString());
+             feedFarward(new Vector<>(outputPattern.getInputPoints()));
+             replaceWeights(trainingAlgorithm.computeOutputPattern(layers, weightMatrices, outputPattern));
+        } while (trainingAlgorithm.hasLearned(layers.get(layers.size()-1), outputPattern));
     }
 
     private void replaceWeights(List<WeightsMat> newWeights) {
         weightMatrices.clear();
         weightMatrices.addAll(newWeights);
-    }
-
-    private int getPrevInt(List<Integer> list, int curr) {
-        return list.get(list.indexOf(curr)-1);
     }
 
     private void feedFarward(Vector<Neuron> input) {
@@ -111,14 +109,7 @@ public class Network {
 
     private Vector<Weight> toWeights(Vector<Neuron> neurons) {
         return new Vector<>(neurons.stream()
-                .map(n -> new Weight(n))
+                .map(Weight::new)
                 .collect(Collectors.toList()));
-    }
-
-    private Vector<Neuron> transformDataPoint(Deque dataPoint) {
-        Vector<Neuron> tmp = new Vector<>(dataPoint);
-        tmp.add(new Neuron());
-
-        return tmp;
     }
 }

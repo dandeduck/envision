@@ -35,7 +35,7 @@ public class Layer {
     }
 
     private void resetBias() {
-        neurons.remove(-1);
+        neurons.remove(neurons.size()-1);
         neurons.add(new Neuron(bias));
     }
 
@@ -51,5 +51,10 @@ public class Layer {
 
     public int indexOf(Neuron neuron) {
         return neurons.indexOf(neuron);
+    }
+
+    @Override
+    public String toString() {
+        return neurons.toString();
     }
 }

@@ -4,6 +4,7 @@ import dataTypes.Matrix;
 import dataTypes.Vector;
 import neuralNetworks.objects.basicObjects.Weight;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -14,7 +15,7 @@ public class WeightsMat extends Matrix<Weight> {
     }
 
     public WeightsMat(int layerSize, int nextLayerSize){
-        super(null);
+        super(new ArrayList());
         addAll(initWeightMatrix(layerSize+1, nextLayerSize+1));
     }
 

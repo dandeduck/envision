@@ -45,4 +45,14 @@ public class Neuron implements Value<Double> {
         set(val - arg);
         return this;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return val == ((Value<Double>) obj).get();
+    }
+
+    @Override
+    public String toString() {
+        return Double.toString(val);
+    }
 }
