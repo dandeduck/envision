@@ -6,22 +6,10 @@ import neuralNetworks.objects.basicObjects.Neuron;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Layer {
-
-    private final Vector<Neuron> neurons;
-    private final double bias;
-
-    public Layer(int size, double bias) {
-        neurons = initNeurons(bias > 0.0 ? size+1 : size);
-        this.bias = bias;
-    }
-
-    public Layer(int size, boolean hasBias) {
-        this(size, hasBias ? 1.0 : 0.0);
-    }
+public class Layer extends Vector<Neuron>{
 
     public Layer(int size) {
-        this(size, 1.0);
+        this.addAll(initNeurons(size));
     }
 
     private Vector<Neuron> initNeurons(int size) {
@@ -30,37 +18,8 @@ public class Layer {
                 .collect(Collectors.toCollection(Vector::new));
     }
 
-    public Vector<Neuron> getNeurons() {
-        return neurons;
-    }
-
-    private void resetBias() {
-        if(bias > 0.0) {
-            neurons.remove(neurons.size() - 1);
-            neurons.add(new Neuron(bias));
-        }
-    }
-
     public void updateLayer(Vector<Neuron> newValues) {
-        neurons.clear();
-        neurons.addAll(newValues);
-        resetBias();
-    }
-
-    public Neuron getNeuron(int index) {
-        return new Neuron(neurons.get(index));
-    }
-
-    public int size() {
-        return neurons.size();
-    }
-
-    public int indexOf(Neuron neuron) {
-        return neurons.indexOf(neuron);
-    }
-
-    @Override
-    public String toString() {
-        return neurons.toString();
+        this.clear();
+        this.addAll(newValues);
     }
 }

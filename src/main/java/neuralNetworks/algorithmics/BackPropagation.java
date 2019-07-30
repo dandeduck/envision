@@ -84,9 +84,7 @@ public class BackPropagation implements TrainingAlgorithm {
     private Vector<Weight> getCorrectedWeightsVector(Vector<Weight> currentVector, Layer inputLayer, Layer resultedLayer, List<Double> outputErrors) {
         return currentVector.stream()
                 .map(Weight::new)
-                .map(w -> calcCorrectWeight(w, gerCorrespondingNeuron(currentVector, w, inputLayer),
-                        gerCorrespondingNeuron(currentVector, w, resultedLayer),
-                        getCorrespondingError(resultedLayer, gerCorrespondingNeuron(currentVector, w, resultedLayer), outputErrors)))
+                .map(w -> calcCorrectWeight(w, )
                 .collect(Collectors.toCollection(Vector::new));
     }
 
@@ -95,6 +93,7 @@ public class BackPropagation implements TrainingAlgorithm {
     }
 
     private Neuron gerCorrespondingNeuron(Vector<Weight> weights, Weight weight, Layer nextLayer) {
+        System.out.println(nextLayer);
         return nextLayer.getNeuron(weights.indexOf(weight));
     }
 
