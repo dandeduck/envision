@@ -12,20 +12,24 @@ public class Vector<V> extends ArrayList<Value> implements Value<Vector<V>>{
         this.addAll(collection);
     }
 
+    public Vector() {
+
+    }
+
     @Override
     public Vector<V> sum(Vector<V> v) {
         checkIfVectorValid(this,v);
-        return new Vector<>(IntStream.range(0, v.size()-1)
+        return IntStream.range(0, v.size())
                 .mapToObj(e -> v.get(e).sum(this.get(e)))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toCollection(Vector::new));
     }
 
     @Override
     public Vector<V> mul(Vector<V> v) {
         checkIfVectorValid(this,v);
-        return new Vector<>(IntStream.range(0, v.size()-1)
+        return IntStream.range(0, v.size())
                 .mapToObj(e -> v.get(e).mul(this.get(e)))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toCollection(Vector::new));
     }
 
     @Deprecated

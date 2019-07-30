@@ -12,7 +12,7 @@ public class Layer {
     private final double bias;
 
     public Layer(int size, double bias) {
-        neurons = initNeurons(size+1);
+        neurons = initNeurons(bias > 0.0 ? size+1 : size);
         this.bias = bias;
     }
 
@@ -25,9 +25,9 @@ public class Layer {
     }
 
     private Vector<Neuron> initNeurons(int size) {
-        return new Vector<>(IntStream.range(1, size)
+        return IntStream.range(0, size)
                 .mapToObj(n -> new Neuron())
-                .collect(Collectors.toList()));
+                .collect(Collectors.toCollection(Vector::new));
     }
 
     public Vector<Neuron> getNeurons() {
@@ -35,18 +35,32 @@ public class Layer {
     }
 
     private void resetBias() {
-        neurons.remove(neurons.size()-1);
-        neurons.add(new Neuron(bias));
+        if(bias > 0.0) {
+            neurons.remove(neurons.size() - 1);
+            neurons.add(new Neuron(bias));
+        }
     }
 
     public void updateLayer(Vector<Neuron> newValues) {
+        System.out.println(toString());
+        for (Object n: neurons) {
+            System.out.println(n.getClass());
+        }
         neurons.clear();
         neurons.addAll(newValues);
+        for (Object n: neurons) {
+            System.out.println(n.getClass());
+        }
+        System.out.println(toString());
         resetBias();
     }
 
     public Neuron getNeuron(int index) {
         return new Neuron(neurons.get(index));
+    }
+
+    public int size() {
+        return neurons.size();
     }
 
     public int indexOf(Neuron neuron) {

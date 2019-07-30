@@ -16,9 +16,9 @@ public class Matrix<V> extends ArrayDeque<Vector<V>> {
         checkIfVectorValid(this, v);
         this.stream()
                 .forEach(e -> System.out.println());
-        return new Vector<>(this.stream()
+        return this.stream()
                 .map(wv -> wv.mul(v).getSum())
-                .collect(Collectors.toList()));
+                .collect(Collectors.toCollection(Vector::new));
     }
 
     private void checkIfVectorValid(Matrix<V> m, Vector<V> v) throws IllegalArgumentException{

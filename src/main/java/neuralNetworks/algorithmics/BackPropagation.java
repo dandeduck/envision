@@ -37,7 +37,7 @@ public class BackPropagation implements TrainingAlgorithm {
     }
 
     private void prepareForBackProp(List<Layer> layers, List<WeightsMat> weightMats, Data outputPattern) {
-        layers.get(layers.size()-1).updateLayer(new Vector<>(outputPattern.getOutputPoints()));
+        layers.get(layers.size()-1).updateLayer(outputPattern.getOutputPoints());
         Collections.reverse(layers);
         Collections.reverse(weightMats);
     }
@@ -69,19 +69,19 @@ public class BackPropagation implements TrainingAlgorithm {
                     .collect(Collectors.toList()));
     }
 
-    private List<Double> getOutputErrors(Layer resultedLayer, List<Double> expectedLayer) {
-        return IntStream.range(0, expectedLayer.size()-1)
-                .mapToDouble(v -> expectedLayer.get(v) - resultedLayer.getNeuron(v).get())
+    private List<Double> getOutputErrors(Layer resultedLayer, Vector<Neuron> expectedLayer) {
+        return IntStream.range(0, expectedLayer.size())
+                .mapToDouble(v -> (Double) expectedLayer.get(v).sub(resultedLayer.getNeuron(v)).get())//OK?
                 .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
     }
 
     private Vector<Weight> getCorrectedWeightsVector(Vector<Weight> currentVector, Layer inputLayer, Layer resultedLayer, List<Double> outputErrors) {
-        return new Vector<>(currentVector.stream()
+        return currentVector.stream()
                 .map(Weight::new)
                 .map(w -> calcCorrectWeight(w, gerCorrespondingNeuron(currentVector, w, inputLayer),
                         gerCorrespondingNeuron(currentVector, w, resultedLayer),
                         getCorrespondingError(resultedLayer, gerCorrespondingNeuron(currentVector, w, resultedLayer), outputErrors)))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toCollection(Vector::new));
     }
 
     private Weight calcCorrectWeight(Weight currWeight, Neuron input, Neuron output, double outputError) {

@@ -1,6 +1,9 @@
 package dataTypes;
 
+import neuralNetworks.objects.basicObjects.Neuron;
+
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Data {
 
@@ -57,11 +60,15 @@ public class Data {
             throw new IllegalArgumentException(ILLEGAL_DATA_MSG);
     }
 
-    public List<Double> getInputPoints() {
-        return input;
+    public Vector<Neuron> getInputPoints() {
+        return input.stream()
+                .map(Neuron::new)
+                .collect(Collectors.toCollection(Vector::new));
     }
 
-    public List<Double> getOutputPoints() {
-        return output;
+    public Vector<Neuron> getOutputPoints() {
+        return output.stream()
+                .map(Neuron::new)
+                .collect(Collectors.toCollection(Vector::new));
     }
 }

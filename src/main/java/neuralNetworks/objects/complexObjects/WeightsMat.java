@@ -1,7 +1,9 @@
 package neuralNetworks.objects.complexObjects;
 
 import dataTypes.Matrix;
+import dataTypes.Value;
 import dataTypes.Vector;
+import neuralNetworks.objects.basicObjects.Neuron;
 import neuralNetworks.objects.basicObjects.Weight;
 
 import java.util.ArrayList;
@@ -16,18 +18,28 @@ public class WeightsMat extends Matrix<Weight> {
 
     public WeightsMat(int layerSize, int nextLayerSize){
         super(new ArrayList());
-        addAll(initWeightMatrix(layerSize+1, nextLayerSize+1));
+        addAll(initWeightMatrix(layerSize, nextLayerSize));
     }
 
     private WeightsMat initWeightMatrix(int layerSize, int nextLayerSize) {
-        return new WeightsMat(IntStream.range(0, layerSize-1)
+        return new WeightsMat(IntStream.range(0, layerSize)
                 .mapToObj(v -> initWeightVector(nextLayerSize))
                 .collect(Collectors.toList()));
     }
 
     private Vector<Weight> initWeightVector(int nextLayerSize) {
-        return new Vector<>(IntStream.range(0, nextLayerSize-1)
+        return IntStream.range(0, nextLayerSize)
                 .mapToObj(w -> new Weight())
-                .collect(Collectors.toList()));
+                .collect(Collectors.toCollection(Vector::new));
+    }
+
+    public Vector<Weight> mulByNeurons(Vector<Neuron> neurons) {
+        return mulByVector(toWeight(neurons));
+    }
+
+    private Vector<Weight> toWeight(Vector<Neuron> neurons) {
+        return neurons.stream()
+                .map(Weight::new)
+                .collect(Collectors.toCollection(Vector::new));
     }
 }

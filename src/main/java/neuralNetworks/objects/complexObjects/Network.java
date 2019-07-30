@@ -29,8 +29,10 @@ public class Network {
         activationFunction = new ActivationFunction(functionType);
 
         layers = initLayers(Arrays.asList(layerSizes));
-        weightMatrices = initWeightMatrices(Arrays.asList(layerSizes));
+        weightMatrices = initWeightMatrices();
         trainingAlgorithm = new BackPropagation(learningRate, 0.01);
+        System.out.println(layers.toString());
+        System.out.println();
     }
 
     private List<Layer> initLayers(List<Integer> layerSizes) {
@@ -39,17 +41,17 @@ public class Network {
                 .collect(Collectors.toList());
     }
 
-    private List<WeightsMat> initWeightMatrices(List<Integer> layerSizes) {
-        return IntStream.range(1, layerSizes.size())
+    private List<WeightsMat> initWeightMatrices() {
+        return IntStream.range(0, layers.size())
                 .skip(1)
-                .mapToObj(m -> new WeightsMat(layerSizes.get(m-1), layerSizes.get(m)))
+                .mapToObj(m -> new WeightsMat(layers.get(m-1).size(), layers.get(m).size()))
                 .collect(Collectors.toList());
     }
 
     public void train() {
          do {
+             feedFarward(outputPattern.getInputPoints());
              System.out.println(layers.toString());
-             feedFarward(new Vector<>(outputPattern.getInputPoints()));
              replaceWeights(trainingAlgorithm.computeOutputPattern(layers, weightMatrices, outputPattern));
         } while (trainingAlgorithm.hasLearned(layers.get(layers.size()-1), outputPattern));
     }
@@ -61,7 +63,7 @@ public class Network {
 
     private void feedFarward(Vector<Neuron> input) {
         updateInputNeurons(input);
-        IntStream.range(0, layers.size()-1)
+        IntStream.range(0, layers.size())
                 .skip(1)
                 .forEach(i -> feedNextLayer(layers.get(i-1),layers.get(i)));
     }
@@ -92,14 +94,8 @@ public class Network {
     }
 
     private Vector<Neuron> calcNextValues(WeightsMat W, Vector<Neuron> a) {
-        return new Vector<>(W.mulByVector(toWeights(a)).stream()
+        return new Vector<>(W.mulByNeurons(a).stream()
                 .map(activationFunction::process)
-                .collect(Collectors.toList()));
-    }
-
-    private Vector<Weight> toWeights(Vector<Neuron> neurons) {
-        return new Vector<>(neurons.stream()
-                .map(Weight::new)
                 .collect(Collectors.toList()));
     }
 }
