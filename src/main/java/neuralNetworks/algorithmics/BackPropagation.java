@@ -5,6 +5,7 @@ import dataTypes.Vector;
 import neuralNetworks.objects.basicObjects.Neuron;
 import neuralNetworks.objects.basicObjects.Weight;
 import neuralNetworks.objects.complexObjects.Layer;
+import neuralNetworks.objects.complexObjects.WeightVector;
 import neuralNetworks.objects.complexObjects.WeightsMat;
 
 import java.util.ArrayList;
@@ -26,13 +27,14 @@ public class BackPropagation implements TrainingAlgorithm {
 
     @Override
     public List<WeightsMat> computeOutputPattern(List<Layer> layers, List<WeightsMat> weightMats, Data outputPattern) {
-        List<Double> errors = getOutputErrors(layers.get(layers.size()-1), outputPattern.getOutputPoints());
+        Layer errors = getOutputErrors(layers.get(layers.size()-1), outputPattern.getOutputPointsAsNeurons());
 
         updateOutputLayer(layers, outputPattern);
         reverseLayersAndWeights(layers, weightMats);
 
         List<WeightsMat> result = layers.stream()
-                .map(l -> layers.indexOf(l) == layers.size()-1 ? null : getCorrectedWeights(getNextLayer(layers, l), l, getCorrespondingWeights(weightMats, layers, l), errors))
+                .limit(layers.size()-1)
+                .map(l -> getCorrectedWeights(getNextLayer(layers, l), l, getCorrespondingWeights(weightMats, layers, l), errors))
                 .collect(Collectors.toList());
         reverseLayersAndWeights(layers, weightMats);
 
@@ -58,7 +60,7 @@ public class BackPropagation implements TrainingAlgorithm {
 
     @Override
     public boolean hasLearned(Layer outputLayer, Data outputPattern) {
-        return outputLayer.getNeurons().stream()
+        return outputLayer.stream()
                 .map(Neuron::new)
                 .allMatch(n -> constrained(n.get(),
                         outputPattern.getOutputPoint(outputLayer.indexOf(n)) - acceptedError,
@@ -69,35 +71,25 @@ public class BackPropagation implements TrainingAlgorithm {
         return val >= min && val <= max;
     }
 
-    private WeightsMat getCorrectedWeights(Layer inputLayer,Layer outputLayer, WeightsMat correspondingWeights, List<Double> outputErrors) {
-        return new WeightsMat(correspondingWeights.stream()
-                    .map(vw -> getCorrectedWeightsVector(vw, inputLayer, outputLayer, outputErrors))
-                    .collect(Collectors.toList()));
+    private WeightsMat getCorrectedWeights(Layer inputLayer,Layer outputLayer, WeightsMat correspondingWeights, Layer outputErrors) {
+        return correspondingWeights.stream()
+                    .map(vw -> getCorrectedWeightsVector(new WeightVector(vw), inputLayer, outputLayer, outputErrors))
+                    .collect(Collectors.toCollection(WeightsMat::new));
     }
 
-    private List<Double> getOutputErrors(Layer resultedLayer, List<Double> expectedLayer) {
+    private Layer getOutputErrors(Layer resultedLayer, Layer expectedLayer) {
         return IntStream.range(0, expectedLayer.size())
-                .mapToDouble(v -> expectedLayer.get(v) - resultedLayer.getNeuron(v).get())
-                .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+                .mapToObj(v -> expectedLayer.get(v).sub(resultedLayer.get(v).get()))
+                .collect(Collectors.toCollection(Layer::new));
     }
 
-    private Vector<Weight> getCorrectedWeightsVector(Vector<Weight> currentVector, Layer inputLayer, Layer resultedLayer, List<Double> outputErrors) {
-        return currentVector.stream()
-                .map(Weight::new)
-                .map(w -> calcCorrectWeight(w, )
-                .collect(Collectors.toCollection(Vector::new));
+    private WeightVector getCorrectedWeightsVector(WeightVector currentWeights, Layer inputLayer, Layer outputLayer, Layer outputErrors) {
+        return IntStream.range(0,currentWeights.size())
+                .mapToObj(i -> calcCorrectWeight(currentWeights.get(i), inputLayer.get(i), outputLayer.get(i), outputErrors.get(i).get()))
+                .collect(Collectors.toCollection(WeightVector::new));
     }
 
     private Weight calcCorrectWeight(Weight currWeight, Neuron input, Neuron output, double outputError) {
         return currWeight.sum(learningRate * outputError *input.get() * output.get() * (1 - output.get()));
-    }
-
-    private Neuron gerCorrespondingNeuron(Vector<Weight> weights, Weight weight, Layer nextLayer) {
-        System.out.println(nextLayer);
-        return nextLayer.getNeuron(weights.indexOf(weight));
-    }
-
-    private double getCorrespondingError(Layer resultedLayer, Neuron neuron, List<Double> errors) {
-        return errors.get(resultedLayer.indexOf(neuron));
     }
 }

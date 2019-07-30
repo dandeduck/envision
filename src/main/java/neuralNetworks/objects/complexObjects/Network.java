@@ -6,6 +6,8 @@ import neuralNetworks.algorithmics.ActivationFunction;
 import neuralNetworks.algorithmics.BackPropagation;
 import neuralNetworks.algorithmics.TrainingAlgorithm;
 import neuralNetworks.constants.enums.ActivationFunctionTypes;
+import neuralNetworks.objects.basicObjects.Bias;
+import neuralNetworks.objects.basicObjects.Weight;
 import neuralNetworks.objects.exception.NoCorrespondingWeightsException;
 import neuralNetworks.objects.basicObjects.Neuron;
 
@@ -18,36 +20,45 @@ public class Network {
 
     private final List<Layer> layers;
     private final List<WeightsMat> weightMatrices;
-    private final Data outputPattern;
+    private final List<BiasWeightPair> biasesAndWeights;
 
+    private final Data outputPattern;
     private final ActivationFunction activationFunction;
     private final TrainingAlgorithm trainingAlgorithm;
 
     public Network(Data outputPattern, ActivationFunctionTypes functionType, double learningRate, Integer... layerSizes) {//in the future change Data to List<Data> and get TrainingAlgorithm or Enum of it
         this.outputPattern = outputPattern;
         activationFunction = new ActivationFunction(functionType);
+        trainingAlgorithm = new BackPropagation(learningRate, 0.01);
 
         layers = initLayers(Arrays.asList(layerSizes));
         weightMatrices = initWeightMatrices();
-        trainingAlgorithm = new BackPropagation(learningRate, 0.01);
+        biasesAndWeights = initBiasesAndWeights();
     }
 
     private List<Layer> initLayers(List<Integer> layerSizes) {
         return layerSizes.stream()
-                .map(l -> layerSizes.indexOf(l) == 0 ? new Layer(l,false) : new Layer(l))
+                .map(Layer::new)
                 .collect(Collectors.toList());
     }
 
     private List<WeightsMat> initWeightMatrices() {
         return IntStream.range(0, layers.size())
                 .skip(1)
-                .mapToObj(m -> new WeightsMat(layers.get(m-1).size(), layers.get(m).size()))
+                .mapToObj(e -> new WeightsMat(layers.get(e-1).size(), layers.get(e).size()))
+                .collect(Collectors.toList());
+    }
+
+    private List<BiasWeightPair> initBiasesAndWeights() {
+        return layers.stream()
+                .skip(1)
+                .map(l -> new BiasWeightPair(l.size()))
                 .collect(Collectors.toList());
     }
 
     public void train() {
          do {
-             feedFarward(outputPattern.getInputPointsAsNeurons());
+             feedForward(outputPattern.getInputPointsAsNeurons());
              replaceWeights(trainingAlgorithm.computeOutputPattern(layers, weightMatrices, outputPattern));
         } while (trainingAlgorithm.hasLearned(layers.get(layers.size()-1), outputPattern));
     }
@@ -57,22 +68,22 @@ public class Network {
         weightMatrices.addAll(newWeights);
     }
 
-    private void feedFarward(Vector<Neuron> input) {
+    private void feedForward(Layer input) {
         updateInputNeurons(input);
         IntStream.range(0, layers.size())
                 .skip(1)
-                .forEach(i -> feedNextLayer(layers.get(i-1),layers.get(i)));
+                .forEach(i -> feedNextLayer(layers.get(i-1), layers.get(i), biasesAndWeights.get(i)));
     }
 
-    private void updateInputNeurons(Vector<Neuron> input) {
+    private void updateInputNeurons(Layer input) {
         layers.get(0).updateLayer(input);
     }
 
-    private void feedNextLayer(Layer prevLayer, Layer nextLayer) {
+    private void feedNextLayer(Layer prevLayer, Layer nextLayer, BiasWeightPair biasWeights) {
         WeightsMat WeightsMat = getCorrespondingWeights(nextLayer);
-        Vector<Neuron> prevValues = prevLayer.getNeurons();
+        WeightVector biasAdditions = biasWeights.getAdditionsToNextLayer();
 
-        nextLayer.updateLayer(calcNextValues(WeightsMat, prevValues));
+        nextLayer.updateLayer(calcNextValues(WeightsMat, prevLayer, biasAdditions));
     }
 
     private WeightsMat getCorrespondingWeights(Layer layer){
@@ -89,10 +100,10 @@ public class Network {
             throw new NoCorrespondingWeightsException();
     }
 
-    private Vector<Neuron> calcNextValues(WeightsMat W, Vector<Neuron> a) {
-        return W.mulByNeurons(a).stream()
+    private Layer calcNextValues(WeightsMat W, Layer a, WeightVector biasAdditions) {
+        return biasAdditions.sum(W.mulByNeurons(a)).stream()
                 .map(activationFunction::process)
                 .map(Neuron::new)
-                .collect(Collectors.toCollection(Vector::new));
+                .collect(Collectors.toCollection(Layer::new));
     }
 }

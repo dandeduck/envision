@@ -5,8 +5,12 @@ import dataTypes.Value;
 public class Bias implements Value<Double> {
     private double val;
 
+    public Bias(double val) {
+        set(val);
+    }
+
     public Bias() {
-        val = 1.0;
+        this(1.0);
     }
 
     @Override

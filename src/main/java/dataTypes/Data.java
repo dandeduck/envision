@@ -1,6 +1,7 @@
 package dataTypes;
 
 import neuralNetworks.objects.basicObjects.Neuron;
+import neuralNetworks.objects.complexObjects.Layer;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,10 +65,10 @@ public class Data {
         return input;
     }
 
-    public Vector<Neuron> getInputPointsAsNeurons() {
+    public Layer getInputPointsAsNeurons() {
         return input.stream()
                 .map(Neuron::new)
-                .collect(Collectors.toCollection(Vector::new));
+                .collect(Collectors.toCollection(Layer::new));
 
     }
 
@@ -77,12 +78,12 @@ public class Data {
         return tmp;
     }
 
-    public Vector<Neuron> getOutputPointsAsNeurons() {
+    public Layer getOutputPointsAsNeurons() {
         List<Double> tmp = new ArrayList<>(output);
         tmp.add(0.0);
 
         return tmp.stream()
                 .map(Neuron::new)
-                .collect(Collectors.toCollection(Vector::new));
+                .collect(Collectors.toCollection(Layer::new));
     }
 }
