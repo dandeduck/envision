@@ -17,7 +17,7 @@ public class Matrix<V> extends ArrayDeque<Vector<V>> {
         this.stream()
                 .forEach(e -> System.out.println());
         return new Vector<>(this.stream()
-                .map(wv -> wv.get().mul(v).getSum())
+                .map(wv -> wv.mul(v).getSum())
                 .collect(Collectors.toList()));
     }
 

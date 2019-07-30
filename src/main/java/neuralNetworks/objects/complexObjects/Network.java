@@ -1,6 +1,5 @@
 package neuralNetworks.objects.complexObjects;
 
-
 import dataTypes.Data;
 import dataTypes.Vector;
 import neuralNetworks.algorithmics.ActivationFunction;
@@ -88,7 +87,7 @@ public class Network {
     }
 
     private void checkIfLayerHasCorrespondingWeights(Layer layer) throws NoCorrespondingWeightsException {
-        if(layers.indexOf(layer) == 0)
+        if(layers.indexOf(layer) <= 0)
             throw new NoCorrespondingWeightsException();
     }
 
