@@ -2,8 +2,6 @@ package neuralNetworks.objects.complexObjects;
 
 
 import dataTypes.Data;
-import dataTypes.Matrix;
-import dataTypes.Value;
 import dataTypes.Vector;
 import neuralNetworks.algorithmics.ActivationFunction;
 import neuralNetworks.algorithmics.BackPropagation;
@@ -13,9 +11,7 @@ import neuralNetworks.objects.exception.NoCorrespondingWeightsException;
 import neuralNetworks.objects.basicObjects.Neuron;
 import neuralNetworks.objects.basicObjects.Weight;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -66,28 +62,23 @@ public class Network {
 
     private void feedFarward(Vector<Neuron> input) {
         updateInputNeurons(input);
-        layers.stream()
+        IntStream.range(0, layers.size()-1)
                 .skip(1)
-                .forEach(l -> feedNextLayer(getPrevLayer(layers,l),l));
+                .forEach(i -> feedNextLayer(layers.get(i-1),layers.get(i)));
     }
 
     private void updateInputNeurons(Vector<Neuron> input) {
         layers.get(0).updateLayer(input);
     }
 
-    private Layer getPrevLayer(List<Layer> layers, Layer currentLayer) {
-        return layers.get(layers.indexOf(currentLayer)-1);
-    }
-
-
     private void feedNextLayer(Layer prevLayer, Layer nextLayer) {
-        Matrix WeightsMat = getCorrespondingWeights(nextLayer);
+        WeightsMat WeightsMat = getCorrespondingWeights(nextLayer);
         Vector<Neuron> prevValues = prevLayer.getNeurons();
 
         nextLayer.updateLayer(calcNextValues(WeightsMat, prevValues));
     }
 
-    private Matrix<Weight> getCorrespondingWeights(Layer layer){
+    private WeightsMat getCorrespondingWeights(Layer layer){
         try {
             checkIfLayerHasCorrespondingWeights(layer);
         } catch (NoCorrespondingWeightsException e) {
@@ -101,9 +92,9 @@ public class Network {
             throw new NoCorrespondingWeightsException();
     }
 
-    private Vector<Neuron> calcNextValues(Matrix<Weight> W, Vector<Neuron> a) {
+    private Vector<Neuron> calcNextValues(WeightsMat W, Vector<Neuron> a) {
         return new Vector<>(W.mulByVector(toWeights(a)).stream()
-                .map(v -> activationFunction.process(v))
+                .map(activationFunction::process)
                 .collect(Collectors.toList()));
     }
 
