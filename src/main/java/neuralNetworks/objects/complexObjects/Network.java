@@ -5,7 +5,6 @@ import neuralNetworks.algorithmics.ActivationFunction;
 import neuralNetworks.algorithmics.TrainingAlgorithm;
 import neuralNetworks.constants.enums.ActivationFunctionTypes;
 import neuralNetworks.constants.enums.TrainingAlgorithmTypes;
-import neuralNetworks.objects.exception.NoCorrespondingWeightsException;
 import neuralNetworks.objects.basicObjects.Neuron;
 
 import java.util.ArrayList;
@@ -91,6 +90,7 @@ public class Network {
     private boolean hasLearnedCluster(DataCluster cluster) {
         return cluster.stream()
                 .allMatch(d -> {
+                    feedForward(d.getInputPointsAsNeurons());
                     System.out.printf("%.5f ", layers.get(layers.size()-1).get(0).get());
                     System.out.printf(d.getOutputPointsAsNeurons().toString() + "\n");
                     return trainingAlgorithm.hasLearned(layers.get(layers.size()-1), d);
@@ -99,9 +99,9 @@ public class Network {
 
     private void learnPattern(Data outputPattern) {
         feedForward(outputPattern.getInputPointsAsNeurons());
-            replaceWeights(trainingAlgorithm.computeOutputPattern(layers, weightMatrices, outputPattern));
-            feedForward(outputPattern.getInputPointsAsNeurons());
-            //System.out.printf("%.5f\n", layers.get(layers.size()-1).get(0).get());
+        replaceWeights(trainingAlgorithm.getAdjustedWeights(layers, weightMatrices, outputPattern));
+        replaceBiasWeights(trainingAlgorithm.getAdjustedBiasWeightList(biasesAndWeights, layers, outputPattern));
+        //System.out.printf("%.5f\n", layers.get(layers.size()-1).get(0).get());
     }
 
     public List<Double> compute(Data d) {
@@ -117,36 +117,24 @@ public class Network {
         weightMatrices.addAll(newWeights);
     }
 
+    private void replaceBiasWeights(List<WeightVector> newWeights) {
+        IntStream.range(0, newWeights.size())
+                .forEach(i -> biasesAndWeights.get(i).setWeights(newWeights.get(i)));
+    }
+
     private void feedForward(Layer input) {
         updateInputNeurons(input);
         IntStream.range(0, layers.size())
-                .skip(1)
-                .forEach(i -> feedNextLayer(layers.get(i-1), layers.get(i), biasesAndWeights.get(i-1)));
+                .limit(layers.size()-1)
+                .forEach(i -> feedNextLayer(layers.get(i), weightMatrices.get(i), layers.get(i+1), biasesAndWeights.get(i)));
     }
 
     private void updateInputNeurons(Layer input) {
         layers.get(0).updateLayer(input);
     }
 
-    private void feedNextLayer(Layer prevLayer, Layer nextLayer, BiasWeightPair biasWeights) {
-        WeightsMat WeightsMat = getCorrespondingWeights(nextLayer);
-        WeightVector biasAdditions = biasWeights.getAdditionsToNextLayer();
-
-        nextLayer.updateLayer(calcNextValues(WeightsMat, prevLayer, biasAdditions));
-    }
-
-    private WeightsMat getCorrespondingWeights(Layer layer){
-        try {
-            checkIfLayerHasCorrespondingWeights(layer);
-        } catch (NoCorrespondingWeightsException e) {
-            e.printStackTrace();
-        }
-        return weightMatrices.get(layers.indexOf(layer)-1);
-    }
-
-    private void checkIfLayerHasCorrespondingWeights(Layer layer) throws NoCorrespondingWeightsException {
-        if(layers.indexOf(layer) <= 0)
-            throw new NoCorrespondingWeightsException();
+    private void feedNextLayer(Layer prevLayer, WeightsMat weightsMat, Layer nextLayer, BiasWeightPair biasWeights) {
+        nextLayer.updateLayer(calcNextValues(weightsMat, prevLayer, biasWeights.getAdditionsToNextLayer()));
     }
 
     private Layer calcNextValues(WeightsMat W, Layer a, WeightVector biasAdditions) {

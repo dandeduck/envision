@@ -29,8 +29,15 @@ public class BiasWeightPair {
                 .collect(Collectors.toCollection(WeightVector::new));
     }
 
-    private void setBias(Bias newBias) {
-        bias.set(newBias.get());
+    public Bias getBias() {
+        return bias;
+    }
+
+    public void setWeights(WeightVector newWeights) {
+        if(!weights.equals(this)) {
+            weights.clear();
+            weights.addAll(newWeights);
+        }
     }
 
     @Override

@@ -3,6 +3,7 @@ package neuralNetworks.algorithmics;
 import dataTypes.Data;
 import neuralNetworks.objects.basicObjects.Neuron;
 import neuralNetworks.objects.basicObjects.Weight;
+import neuralNetworks.objects.complexObjects.BiasWeightPair;
 import neuralNetworks.objects.complexObjects.Layer;
 import neuralNetworks.objects.complexObjects.WeightVector;
 import neuralNetworks.objects.complexObjects.WeightsMat;
@@ -23,7 +24,7 @@ public class BackPropagation implements TrainingAlgorithm {
     }
 
     @Override
-    public List<WeightsMat> computeOutputPattern(List<Layer> layers, List<WeightsMat> weightMats, Data outputPattern) {
+    public List<WeightsMat> getAdjustedWeights(List<Layer> layers, List<WeightsMat> weightMats, Data outputPattern) {
         reverseLayersAndWeights(layers, weightMats);
 
         List<WeightsMat> result = IntStream.range(0, layers.size())
@@ -31,7 +32,7 @@ public class BackPropagation implements TrainingAlgorithm {
                 .mapToObj(i -> {
                     Layer output = layers.get(i);
                     Layer input = layers.get(i+1);
-                    Layer errors = i == 0 ? getOutputErrors(output,outputPattern.getOutputPointsAsNeurons()) : getExpectedLayerError(layers.get(i), layers.get(i-1), weightMats.get(i-1));
+                    Layer errors = i == 0 ? getOutputErrors(output,outputPattern.getOutputPointsAsNeurons()) : getExpectedLayerErrors(output, layers.get(i-1), weightMats.get(i-1));
 
                     return getCorrectedWeights(input, output, weightMats.get(i), errors);
                 })
@@ -40,6 +41,31 @@ public class BackPropagation implements TrainingAlgorithm {
         reverseLayersAndWeights(layers, result);
         return result;
     }
+    @Override
+    public List<WeightVector> getAdjustedBiasWeightList(List<BiasWeightPair> biasWeightPairs, List<Layer> layers, Data outputPattern) {
+
+        Collections.reverse(biasWeightPairs);
+        Collections.reverse(layers);
+
+        List<WeightVector> result = IntStream.range(0, biasWeightPairs.size())
+                .mapToObj(i ->  {
+                    BiasWeightPair currentPair = biasWeightPairs.get(i);
+                    Layer output = layers.get(i);
+
+                    return getAdjustedBiasWeights(currentPair, output, i == 0 ? getOutputErrors(output, outputPattern.getOutputPointsAsNeurons()) : getExpectedLayerErrorsSingleInput(output, layers.get(i-1), currentPair.getWeights()));
+                })
+                .collect(Collectors.toList());
+        Collections.reverse(result);
+        Collections.reverse(layers);
+
+        return result;
+    }
+
+    public WeightVector getAdjustedBiasWeights(BiasWeightPair biasWeightPair, Layer output, Layer errors) {
+        return IntStream.range(0, errors.size())
+                .mapToObj(i -> calcCorrectWeight(biasWeightPair.getWeights().get(i), new Neuron(biasWeightPair.getBias()),output.get(i), errors.get(i).get()))
+                .collect(Collectors.toCollection(WeightVector::new));
+    }
 
     private Layer getOutputErrors(Layer resultedLayer, Layer expectedLayer) {
         return IntStream.range(0, resultedLayer.size())
@@ -47,12 +73,19 @@ public class BackPropagation implements TrainingAlgorithm {
                 .collect(Collectors.toCollection(Layer::new));
     }
 
-    private Layer getExpectedLayerError(Layer input, Layer output, WeightsMat weights) {
-        Layer tmp = new Layer(input.size());;
+    private Layer getExpectedLayerErrors(Layer input, Layer output, WeightsMat weights) {
+        Layer tmp = new Layer(input.size());
 
         IntStream.range(0, output.size())
                 .forEach(i -> tmp.set(tmp.sum(calcExpectedNeuronError(weights.get(i), output.get(i), input))));
+        return tmp;
+    }
 
+    private Layer getExpectedLayerErrorsSingleInput(Layer input, Layer output, WeightVector weights) {
+        Layer tmp = new Layer(input.size());
+
+        IntStream.range(0, output.size())
+                .forEach(i -> tmp.sum(calcExpectedNeuronError(weights, output.get(i), input)));
         return tmp;
     }
 
@@ -75,7 +108,7 @@ public class BackPropagation implements TrainingAlgorithm {
     }
 
     private Weight calcCorrectWeight(Weight currWeight, Neuron input, Neuron output, double outputError) {
-        return currWeight.sum(learningRate * outputError *input.get() * output.get() * (1 - output.get()));//do you need 1-output ?
+        return currWeight.sum(learningRate * outputError *input.get() * output.get() * (1 - output.get()));
     }
 
     private void reverseLayersAndWeights(List<Layer> layers, List<WeightsMat> weightMats) {
