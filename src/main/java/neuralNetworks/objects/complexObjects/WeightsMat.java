@@ -1,7 +1,6 @@
 package neuralNetworks.objects.complexObjects;
 
 import dataTypes.Matrix;
-import dataTypes.Vector;
 import neuralNetworks.objects.basicObjects.Weight;
 
 import java.util.ArrayList;
