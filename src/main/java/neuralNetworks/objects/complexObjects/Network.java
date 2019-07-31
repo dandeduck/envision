@@ -62,7 +62,7 @@ public class Network {
         do {
             replaceWeights(trainingAlgorithm.computeOutputPattern(layers, weightMatrices, outputPattern));
             feedForward(outputPattern.getInputPointsAsNeurons());
-            System.out.println(layers);
+            System.out.printf("%.5f\n", layers.get(layers.size()-1).get(0).get());
         } while (!trainingAlgorithm.hasLearned(layers.get(layers.size()-1), outputPattern));
     }
 

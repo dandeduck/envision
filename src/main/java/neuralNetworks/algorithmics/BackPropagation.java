@@ -31,10 +31,7 @@ public class BackPropagation implements TrainingAlgorithm {
                 .mapToObj(i -> {
                     Layer output = layers.get(i);
                     Layer input = layers.get(i+1);
-                    Layer expectedLayer = i == 0 ? outputPattern.getOutputPointsAsNeurons() : getExpectedLayer(layers.get(i), layers.get(i-1), weightMats.get(i-1));
-                    Layer errors = getOutputErrors(output, expectedLayer);
-
-                    output.updateLayer(expectedLayer);
+                    Layer errors = i == 0 ? getOutputErrors(output,outputPattern.getOutputPointsAsNeurons()) : getExpectedLayerError(layers.get(i), layers.get(i-1), weightMats.get(i-1));
 
                     return getCorrectedWeights(input, output, weightMats.get(i), errors);
                 })
@@ -50,9 +47,8 @@ public class BackPropagation implements TrainingAlgorithm {
                 .collect(Collectors.toCollection(Layer::new));
     }
 
-    private Layer getExpectedLayer(Layer input, Layer output, WeightsMat weights) {
-        Layer tmp = new Layer(input.size());
-        tmp.sum(input);
+    private Layer getExpectedLayerError(Layer input, Layer output, WeightsMat weights) {
+        Layer tmp = new Layer(input.size());;
 
         IntStream.range(0, output.size())
                 .forEach(i -> tmp.set(tmp.sum(calcExpectedNeuronError(weights.get(i), output.get(i), input))));
