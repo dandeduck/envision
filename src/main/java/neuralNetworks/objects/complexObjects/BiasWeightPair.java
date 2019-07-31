@@ -23,7 +23,6 @@ public class BiasWeightPair {
     }
 
     public WeightVector getAdditionsToNextLayer() {
-        weights.forEach(n -> n.mul(bias.get()));
         return weights.stream()
                 .map(n -> n.mul(bias.get()))
                 .collect(Collectors.toCollection(WeightVector::new));

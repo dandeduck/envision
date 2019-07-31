@@ -30,20 +30,17 @@ public class Neuron implements Value<Double> {
 
     @Override
     public Neuron sum(Double arg) {
-        set(val + arg);
-        return this;
+        return new Neuron(val + arg);
     }
 
     @Override
     public Neuron mul(Double arg) {
-        set(val * arg);
-        return this;
+        return new Neuron(val * arg);
     }
 
     @Override
     public Neuron sub(Double arg) {
-        set(val - arg);
-        return this;
+        return new Neuron(val - arg);
     }
 
     @Override

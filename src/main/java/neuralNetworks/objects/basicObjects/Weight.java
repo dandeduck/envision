@@ -32,20 +32,17 @@ public class Weight implements Value<Double> {
 
     @Override
     public Weight sum(Double arg) {
-        set(weight + arg);
-        return this;
+        return new Weight(weight + arg);
     }
 
     @Override
     public Weight mul(Double arg) {
-        set(weight * arg);
-        return this;
+        return new Weight(weight * arg);
     }
 
     @Override
     public Weight sub(Double arg) {
-        set(weight - arg);
-        return this;
+        return new Weight(weight - arg);
     }
 
     @Override

@@ -25,20 +25,17 @@ public class Bias implements Value<Double> {
 
     @Override
     public Bias sum(Double arg) {
-        val += arg;
-        return this;
+        return new Bias(val + arg);
     }
 
     @Override
     public Bias mul(Double arg) {
-        val *= arg;
-        return this;
+        return new Bias(val * arg);
     }
 
     @Override
     public Bias sub(Double arg) {
-        val -= arg;
-        return this;
+        return new Bias(val - arg);
     }
 
     @Override
