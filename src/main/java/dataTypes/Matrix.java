@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class Matrix<V> extends ArrayList<Vector<V>> {
+public class Matrix<V extends Value<Double>> extends ArrayList<Vector<V>> {
     public Matrix(Collection collection) {
         super(collection);
     }

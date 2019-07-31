@@ -57,15 +57,17 @@ public class Network {
     }
 
     public void train() {
-         do {
-             feedForward(outputPattern.getInputPointsAsNeurons());
-             replaceWeights(trainingAlgorithm.computeOutputPattern(layers, weightMatrices, outputPattern));
-        } while (trainingAlgorithm.hasLearned(layers.get(layers.size()-1), outputPattern));
+        feedForward(outputPattern.getInputPointsAsNeurons());
+
+        do {
+            replaceWeights(trainingAlgorithm.computeOutputPattern(layers, weightMatrices, outputPattern));
+            feedForward(outputPattern.getInputPointsAsNeurons());
+            System.out.println(layers);
+        } while (!trainingAlgorithm.hasLearned(layers.get(layers.size()-1), outputPattern));
     }
 
     private void replaceWeights(List<WeightsMat> newWeights) {
         weightMatrices.clear();
-        System.out.println(weightMatrices);
         weightMatrices.addAll(newWeights);
     }
 

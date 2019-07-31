@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Vector<V> extends ArrayList<Value> implements Value<Vector<V>>{
+public class Vector<V extends Value<Double>> extends ArrayList<Value> implements Value<Vector<V>>{
     private static final String ILLEGAL_VECTOR_EXCEPTION_MSG = "Vectors must be the same length for operations.";
 
     public Vector(Collection collection) {

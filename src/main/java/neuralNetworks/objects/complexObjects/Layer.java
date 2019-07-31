@@ -3,13 +3,16 @@ package neuralNetworks.objects.complexObjects;
 import dataTypes.Vector;
 import neuralNetworks.objects.basicObjects.Neuron;
 
+import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Layer extends Vector<Neuron>{
-
     public Layer() {
+    }
 
+    public Layer(Collection c) {
+        addAll(c);
     }
 
     public Layer(int size) {

@@ -25,6 +25,7 @@ public class BackPropagation implements TrainingAlgorithm {
     @Override
     public List<WeightsMat> computeOutputPattern(List<Layer> layers, List<WeightsMat> weightMats, Data outputPattern) {
         reverseLayersAndWeights(layers, weightMats);
+
         List<WeightsMat> result = IntStream.range(0, layers.size())
                 .limit(layers.size()-1)
                 .mapToObj(i -> {
@@ -38,8 +39,8 @@ public class BackPropagation implements TrainingAlgorithm {
                     return getCorrectedWeights(input, output, weightMats.get(i), errors);
                 })
                 .collect(Collectors.toList());
-        reverseLayersAndWeights(layers, result);
 
+        reverseLayersAndWeights(layers, result);
         return result;
     }
 
@@ -50,18 +51,18 @@ public class BackPropagation implements TrainingAlgorithm {
     }
 
     private Layer getExpectedLayer(Layer input, Layer output, WeightsMat weights) {
-        Layer tmp = new Layer();
-        tmp.updateLayer(input);
+        Layer tmp = new Layer(input.size());
+        tmp.sum(input);
 
         IntStream.range(0, output.size())
                 .forEach(i -> tmp.set(tmp.sum(calcExpectedNeuronError(weights.get(i), output.get(i), input))));
 
-        return input;
+        return tmp;
     }
 
     private Layer calcExpectedNeuronError(WeightVector connectedWeights, Neuron output, Layer input) {
         return IntStream.range(0, input.size())
-                .mapToObj(i -> output.sub(input.get(i).get()).mul(connectedWeights.get(i).get()))
+                .mapToObj(i -> new Neuron(output.sub(input.get(i).get()).mul(connectedWeights.get(i).get()).get()))
                 .collect(Collectors.toCollection(Layer::new));
     }
 
