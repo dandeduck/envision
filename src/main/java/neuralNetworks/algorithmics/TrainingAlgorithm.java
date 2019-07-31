@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface TrainingAlgorithm {
     List<WeightsMat> getAdjustedWeights(List<Layer> layers, List<WeightsMat> weightMats, Data outputPattern);
-    List<WeightVector> getAdjustedBiasWeightList(List<BiasWeightPair> biasWeightPair, List<Layer> layers, Data outputPattern);
+    List<WeightVector> getAdjustedBiasWeightList(List<BiasWeightPair> biasWeightPairs, List<Layer> layers, List<WeightsMat> correctedWeights, Data outputPattern);
     boolean hasLearned(Layer outputLayer, Data outputPattern);
 }

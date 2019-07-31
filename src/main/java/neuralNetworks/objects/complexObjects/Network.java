@@ -100,8 +100,9 @@ public class Network {
     private void learnPattern(Data outputPattern) {
         feedForward(outputPattern.getInputPointsAsNeurons());
         replaceWeights(trainingAlgorithm.getAdjustedWeights(layers, weightMatrices, outputPattern));
-        replaceBiasWeights(trainingAlgorithm.getAdjustedBiasWeightList(biasesAndWeights, layers, outputPattern));
-        //System.out.printf("%.5f\n", layers.get(layers.size()-1).get(0).get());
+        System.out.printf("%.5f ", layers.get(layers.size()-1).get(0).get());
+        System.out.printf(outputPattern.getOutputPointsAsNeurons().toString() + "\n");
+        replaceBiasWeights(trainingAlgorithm.getAdjustedBiasWeightList(biasesAndWeights, layers, weightMatrices, outputPattern));
     }
 
     public List<Double> compute(Data d) {

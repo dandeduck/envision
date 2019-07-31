@@ -23,6 +23,11 @@ public class WeightsMat extends Matrix<Weight> {
         addAll(initWeightMatrix(layerSize, nextLayerSize));
     }
 
+    public WeightsMat(WeightVector vector) {
+        super(new ArrayList());
+        this.add(vector);
+    }
+
     private WeightsMat initWeightMatrix(int layerSize, int nextLayerSize) {
         return IntStream.range(0, nextLayerSize)
                 .mapToObj(v -> new WeightVector(layerSize))

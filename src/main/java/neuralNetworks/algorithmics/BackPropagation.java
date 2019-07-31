@@ -8,6 +8,8 @@ import neuralNetworks.objects.complexObjects.Layer;
 import neuralNetworks.objects.complexObjects.WeightVector;
 import neuralNetworks.objects.complexObjects.WeightsMat;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,22 +29,29 @@ public class BackPropagation implements TrainingAlgorithm {
     public List<WeightsMat> getAdjustedWeights(List<Layer> layers, List<WeightsMat> weightMats, Data outputPattern) {
         reverseLayersAndWeights(layers, weightMats);
 
-        List<WeightsMat> result = IntStream.range(0, layers.size())
+        List<Layer> tmp = new ArrayList<>();
+        List<WeightsMat> result = new ArrayList<>();
+
+        IntStream.range(0, layers.size())
                 .limit(layers.size()-1)
-                .mapToObj(i -> {
+                .forEach(i -> {
                     Layer output = layers.get(i);
                     Layer input = layers.get(i+1);
-                    Layer errors = i == 0 ? getOutputErrors(output,outputPattern.getOutputPointsAsNeurons()) : getExpectedLayerErrors(output, layers.get(i-1), weightMats.get(i-1));
+                    Layer errors = i == 0 ? getOutputErrors(output,outputPattern.getOutputPointsAsNeurons()) : getExpectedLayerErrors(output, tmp.get(i-1), result.get(i-1));
 
-                    return getCorrectedWeights(input, output, weightMats.get(i), errors);
-                })
-                .collect(Collectors.toList());
+//                    System.out.println(output);
+                    tmp.add(new Layer(output.sum(errors)));
+//                    System.out.println(output);
+
+                    result.add(getCorrectedWeights(input, tmp.get(i), weightMats.get(i), errors));
+                });
 
         reverseLayersAndWeights(layers, result);
         return result;
     }
+
     @Override
-    public List<WeightVector> getAdjustedBiasWeightList(List<BiasWeightPair> biasWeightPairs, List<Layer> layers, Data outputPattern) {
+    public List<WeightVector> getAdjustedBiasWeightList(List<BiasWeightPair> biasWeightPairs, List<Layer> layers, List<WeightsMat> correctedWeights, Data outputPattern) {
 
         Collections.reverse(biasWeightPairs);
         Collections.reverse(layers);
@@ -51,10 +60,14 @@ public class BackPropagation implements TrainingAlgorithm {
                 .mapToObj(i ->  {
                     BiasWeightPair currentPair = biasWeightPairs.get(i);
                     Layer output = layers.get(i);
+                    Layer errors = i == 0 ? getOutputErrors(output, outputPattern.getOutputPointsAsNeurons()) : getExpectedLayerErrors(output, layers.get(i-1), correctedWeights.get(i-1));
 
-                    return getAdjustedBiasWeights(currentPair, output, i == 0 ? getOutputErrors(output, outputPattern.getOutputPointsAsNeurons()) : getExpectedLayerErrorsSingleInput(output, layers.get(i-1), currentPair.getWeights()));
+                    output.set(output.sum(errors));
+
+                    return (getAdjustedBiasWeights(currentPair, output, errors));
                 })
                 .collect(Collectors.toList());
+
         Collections.reverse(result);
         Collections.reverse(layers);
 
@@ -75,24 +88,19 @@ public class BackPropagation implements TrainingAlgorithm {
 
     private Layer getExpectedLayerErrors(Layer input, Layer output, WeightsMat weights) {
         Layer tmp = new Layer(input.size());
-
         IntStream.range(0, output.size())
                 .forEach(i -> tmp.set(tmp.sum(calcExpectedNeuronError(weights.get(i), output.get(i), input))));
         return tmp;
     }
 
-    private Layer getExpectedLayerErrorsSingleInput(Layer input, Layer output, WeightVector weights) {
-        Layer tmp = new Layer(input.size());
-
-        IntStream.range(0, output.size())
-                .forEach(i -> tmp.sum(calcExpectedNeuronError(weights, output.get(i), input)));
-        return tmp;
-    }
-
     private Layer calcExpectedNeuronError(WeightVector connectedWeights, Neuron output, Layer input) {
         return IntStream.range(0, input.size())
-                .mapToObj(i -> new Neuron(output.sub(input.get(i).get()).mul(connectedWeights.get(i).get()).get()))
+                .mapToObj(i -> calcExpectedNeuron(input.get(i), output, connectedWeights.get(i)))
                 .collect(Collectors.toCollection(Layer::new));
+    }
+
+    private Neuron calcExpectedNeuron(Neuron input, Neuron output, Weight weight) {
+        return new Neuron(output.sub(input.get()).mul(weight.get()).get());
     }
 
     private WeightsMat getCorrectedWeights(Layer input, Layer output, WeightsMat correspondingWeights, Layer outputErrors) {
