@@ -5,6 +5,7 @@ import neuralNetworks.algorithmics.ActivationFunction;
 import neuralNetworks.algorithmics.BackPropagation;
 import neuralNetworks.algorithmics.TrainingAlgorithm;
 import neuralNetworks.constants.enums.ActivationFunctionTypes;
+import neuralNetworks.constants.enums.TrainingAlgorithmTypes;
 import neuralNetworks.objects.exception.NoCorrespondingWeightsException;
 import neuralNetworks.objects.basicObjects.Neuron;
 
@@ -24,11 +25,11 @@ public class Network {
     private final ActivationFunction activationFunction;
     private final TrainingAlgorithm trainingAlgorithm;
 
-    public Network(List<Data> dataList, int clusterSize, ActivationFunctionTypes functionType, double learningRate, double acceptedError, Integer... layerSizes) {//in the future change Data to List<Data> and get TrainingAlgorithm or Enum of it
+    public Network(List<Data> dataList, int clusterSize, ActivationFunctionTypes functionType, TrainingAlgorithmTypes algorithmType, double learningRate, double acceptedError, Integer... layerSizes) {//in the future change Data to List<Data> and get TrainingAlgorithm or Enum of it
         dataClusters = new ArrayList<>();
         divideDataIntoClusters(dataList, clusterSize);
         activationFunction = new ActivationFunction(functionType);
-        trainingAlgorithm = new BackPropagation(learningRate, acceptedError);
+        trainingAlgorithm = algorithmType.getAlgorithm(learningRate, acceptedError);
 
         layers = initLayers(Arrays.asList(layerSizes));
         weightMatrices = initWeightMatrices();

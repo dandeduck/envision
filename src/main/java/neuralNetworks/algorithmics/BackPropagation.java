@@ -17,9 +17,9 @@ public class BackPropagation implements TrainingAlgorithm {
     private final double learningRate;
     private final double acceptedError;
 
-    public BackPropagation(double learningRate, double expectedError) {
+    public BackPropagation(double learningRate, double acceptedError) {
         this.learningRate = learningRate;
-        this.acceptedError = expectedError;
+        this.acceptedError = acceptedError;
     }
 
     @Override
