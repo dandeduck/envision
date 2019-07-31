@@ -65,6 +65,7 @@ public class Network {
 
     private void replaceWeights(List<WeightsMat> newWeights) {
         weightMatrices.clear();
+        System.out.println(weightMatrices);
         weightMatrices.addAll(newWeights);
     }
 
@@ -72,7 +73,7 @@ public class Network {
         updateInputNeurons(input);
         IntStream.range(0, layers.size())
                 .skip(1)
-                .forEach(i -> feedNextLayer(layers.get(i-1), layers.get(i), biasesAndWeights.get(i)));
+                .forEach(i -> feedNextLayer(layers.get(i-1), layers.get(i), biasesAndWeights.get(i-1)));
     }
 
     private void updateInputNeurons(Layer input) {

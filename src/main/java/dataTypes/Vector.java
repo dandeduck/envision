@@ -2,7 +2,6 @@ package dataTypes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -21,7 +20,7 @@ public class Vector<V> extends ArrayList<Value> implements Value<Vector<V>>{
     public Vector<V> sum(Vector<V> v) {
         checkIfVectorValid(this,v);
         return IntStream.range(0, v.size())
-                .mapToObj(e -> v.get(e).sum(this.get(e)))
+                .mapToObj(e -> v.get(e).sum(this.get(e).get()))
                 .collect(Collectors.toCollection(Vector::new));
     }
 

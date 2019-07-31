@@ -40,4 +40,9 @@ public class Bias implements Value<Double> {
         val -= arg;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(val);
+    }
 }

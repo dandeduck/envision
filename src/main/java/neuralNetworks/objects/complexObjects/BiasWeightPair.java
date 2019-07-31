@@ -1,8 +1,6 @@
 package neuralNetworks.objects.complexObjects;
 
-import dataTypes.Vector;
 import neuralNetworks.objects.basicObjects.Bias;
-import neuralNetworks.objects.basicObjects.Weight;
 
 import java.util.stream.Collectors;
 
@@ -20,9 +18,12 @@ public class BiasWeightPair {
         this(nextLayerSize, new Bias());
     }
 
-
+    public WeightVector getWeights() {
+        return weights;
+    }
 
     public WeightVector getAdditionsToNextLayer() {
+        weights.forEach(n -> n.mul(bias.get()));
         return weights.stream()
                 .map(n -> n.mul(bias.get()))
                 .collect(Collectors.toCollection(WeightVector::new));
@@ -30,5 +31,10 @@ public class BiasWeightPair {
 
     private void setBias(Bias newBias) {
         bias.set(newBias.get());
+    }
+
+    @Override
+    public String toString() {
+        return getAdditionsToNextLayer().toString();
     }
 }

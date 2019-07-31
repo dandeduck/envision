@@ -1,9 +1,7 @@
 package neuralNetworks.objects.complexObjects;
 
 import dataTypes.Matrix;
-import dataTypes.Value;
 import dataTypes.Vector;
-import neuralNetworks.objects.basicObjects.Neuron;
 import neuralNetworks.objects.basicObjects.Weight;
 
 import java.util.ArrayList;
@@ -40,5 +38,10 @@ public class WeightsMat extends Matrix<Weight> {
         return neurons.stream()
                 .map(Weight::new)
                 .collect(Collectors.toCollection(WeightVector::new));
+    }
+
+    @Override
+    public WeightVector get(int index) {
+        return new WeightVector(super.get(index));
     }
 }

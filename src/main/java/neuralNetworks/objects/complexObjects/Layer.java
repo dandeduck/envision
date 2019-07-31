@@ -1,6 +1,5 @@
 package neuralNetworks.objects.complexObjects;
 
-import dataTypes.Value;
 import dataTypes.Vector;
 import neuralNetworks.objects.basicObjects.Neuron;
 
@@ -24,8 +23,10 @@ public class Layer extends Vector<Neuron>{
     }
 
     public void updateLayer(Layer newLayer) {
-        this.clear();
-        this.addAll(newLayer);
+        if(!newLayer.equals(this)) {
+            this.clear();
+            this.addAll(newLayer);
+        }
     }
 
     @Override

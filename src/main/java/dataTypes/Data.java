@@ -73,16 +73,11 @@ public class Data {
     }
 
     public List<Double> getOutputPoints() {
-        List<Double> tmp = new ArrayList<>(output);
-        tmp.add(0.0);
-        return tmp;
+        return output;
     }
 
     public Layer getOutputPointsAsNeurons() {
-        List<Double> tmp = new ArrayList<>(output);
-        tmp.add(0.0);
-
-        return tmp.stream()
+        return output.stream()
                 .map(Neuron::new)
                 .collect(Collectors.toCollection(Layer::new));
     }

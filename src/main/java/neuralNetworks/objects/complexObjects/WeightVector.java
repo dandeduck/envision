@@ -22,7 +22,7 @@ public class WeightVector extends Vector<Weight> {
 
     private List<Weight> initWeights(int nextLayerSize) {
         return IntStream.range(0, nextLayerSize)
-                .mapToObj(Weight::new)
+                .mapToObj(i -> new Weight())
                 .collect(Collectors.toList());
     }
 
