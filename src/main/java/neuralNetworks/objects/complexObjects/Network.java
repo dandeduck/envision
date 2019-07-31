@@ -1,13 +1,10 @@
 package neuralNetworks.objects.complexObjects;
 
 import dataTypes.Data;
-import dataTypes.Vector;
 import neuralNetworks.algorithmics.ActivationFunction;
 import neuralNetworks.algorithmics.BackPropagation;
 import neuralNetworks.algorithmics.TrainingAlgorithm;
 import neuralNetworks.constants.enums.ActivationFunctionTypes;
-import neuralNetworks.objects.basicObjects.Bias;
-import neuralNetworks.objects.basicObjects.Weight;
 import neuralNetworks.objects.exception.NoCorrespondingWeightsException;
 import neuralNetworks.objects.basicObjects.Neuron;
 
@@ -22,14 +19,14 @@ public class Network {
     private final List<WeightsMat> weightMatrices;
     private final List<BiasWeightPair> biasesAndWeights;
 
-    private final Data outputPattern;
+    private final List<Data> outputPatterns;
     private final ActivationFunction activationFunction;
     private final TrainingAlgorithm trainingAlgorithm;
 
-    public Network(Data outputPattern, ActivationFunctionTypes functionType, double learningRate, Integer... layerSizes) {//in the future change Data to List<Data> and get TrainingAlgorithm or Enum of it
-        this.outputPattern = outputPattern;
+    public Network(List<Data> outputPatterns, ActivationFunctionTypes functionType, double learningRate, double acceptedError, Integer... layerSizes) {//in the future change Data to List<Data> and get TrainingAlgorithm or Enum of it
+        this.outputPatterns = outputPatterns;
         activationFunction = new ActivationFunction(functionType);
-        trainingAlgorithm = new BackPropagation(learningRate, 0.01);
+        trainingAlgorithm = new BackPropagation(learningRate, acceptedError);
 
         layers = initLayers(Arrays.asList(layerSizes));
         weightMatrices = initWeightMatrices();
@@ -57,6 +54,10 @@ public class Network {
     }
 
     public void train() {
+        outputPatterns.forEach(d -> outputPatterns.forEach(this::addPattern));
+    }
+
+    private void addPattern(Data outputPattern) {
         feedForward(outputPattern.getInputPointsAsNeurons());
 
         do {

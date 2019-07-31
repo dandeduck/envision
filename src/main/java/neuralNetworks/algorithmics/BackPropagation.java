@@ -87,9 +87,7 @@ public class BackPropagation implements TrainingAlgorithm {
     public boolean hasLearned(Layer outputLayer, Data outputPattern) {
         return outputLayer.stream()
                 .map(Neuron::new)
-                .allMatch(n -> constrained(n.get(),
-                        outputPattern.getOutputPoint(outputLayer.indexOf(n)) - acceptedError,
-                        outputPattern.getOutputPoint(outputLayer.indexOf(n)) + acceptedError));
+                .allMatch(n -> outputLayer.get(outputLayer.size()-1).get() > outputPattern.getOutputPoint(outputLayer.indexOf(n)) - acceptedError);
     }
 
     private boolean constrained(double val, double min, double max) {

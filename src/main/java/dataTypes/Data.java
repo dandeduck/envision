@@ -24,16 +24,9 @@ public class Data {
         this(new ArrayList<>(inputSize),new ArrayList<>(outputSize));
     }
 
-    public double getInputPoint(int index) {
-        return input.get(index);
-    }
 
     public double getOutputPoint(int index) {
         return output.get(index);
-    }
-
-    public void addInput(double inputPoint) {
-        input.add(inputPoint);
     }
 
     public void addOutput(double outputPoint) {
@@ -44,25 +37,13 @@ public class Data {
         input.addAll(inputs);
     }
 
-    public void addOutputs(List<Double> outputs) {
-        input.addAll(outputs);
-    }
-
     public void addInputs(Double... inputs) {
         addInputs(Arrays.asList(inputs));
-    }
-
-    public void addOutputs(Double... outputs) {
-        addOutputs(Arrays.asList(outputs));
     }
 
     private void checkIfDataValid(List input, List output) throws IllegalArgumentException {
         if(input.size() != output.size())
             throw new IllegalArgumentException(ILLEGAL_DATA_MSG);
-    }
-
-    public List<Double> getInputPoints() {
-        return input;
     }
 
     public Layer getInputPointsAsNeurons() {
@@ -72,13 +53,14 @@ public class Data {
 
     }
 
-    public List<Double> getOutputPoints() {
-        return output;
-    }
-
     public Layer getOutputPointsAsNeurons() {
         return output.stream()
                 .map(Neuron::new)
                 .collect(Collectors.toCollection(Layer::new));
+    }
+
+    @Override
+    public String toString() {
+        return String.format("input: %s ,output: %s",input,output);
     }
 }
