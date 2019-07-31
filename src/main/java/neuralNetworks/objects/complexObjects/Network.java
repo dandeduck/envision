@@ -91,8 +91,8 @@ public class Network {
         return cluster.stream()
                 .allMatch(d -> {
                     feedForward(d.getInputPointsAsNeurons());
-                    System.out.printf("%.5f ", layers.get(layers.size()-1).get(0).get());
-                    System.out.printf(d.getOutputPointsAsNeurons().toString() + "\n");
+//                    System.out.printf("%.5f ", layers.get(layers.size()-1).get(0).get());
+//                    System.out.printf(d.getOutputPointsAsNeurons().toString() + "\n");
                     return trainingAlgorithm.hasLearned(layers.get(layers.size()-1), d);
                 });
     }
