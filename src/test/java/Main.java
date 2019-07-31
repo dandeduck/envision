@@ -19,9 +19,7 @@ public class Main {
         dataList.add(data);
         dataList.add(data1);
 
-        System.out.println(dataList);
-
-        Network net = new Network(dataList, ActivationFunctionTypes.SIGMOID, 0.25, 0.01, 2, 3, 1);
+        Network net = new Network(dataList, 100, ActivationFunctionTypes.SIGMOID, 0.25, 0.01, 2, 3, 1);
         net.train();
     }
 }

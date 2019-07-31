@@ -8,6 +8,7 @@ import neuralNetworks.constants.enums.ActivationFunctionTypes;
 import neuralNetworks.objects.exception.NoCorrespondingWeightsException;
 import neuralNetworks.objects.basicObjects.Neuron;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,18 +20,27 @@ public class Network {
     private final List<WeightsMat> weightMatrices;
     private final List<BiasWeightPair> biasesAndWeights;
 
-    private final List<Data> outputPatterns;
+    private final List<DataCluster> dataClusters;
     private final ActivationFunction activationFunction;
     private final TrainingAlgorithm trainingAlgorithm;
 
-    public Network(List<Data> outputPatterns, ActivationFunctionTypes functionType, double learningRate, double acceptedError, Integer... layerSizes) {//in the future change Data to List<Data> and get TrainingAlgorithm or Enum of it
-        this.outputPatterns = outputPatterns;
+    public Network(List<Data> dataList, int clusterSize, ActivationFunctionTypes functionType, double learningRate, double acceptedError, Integer... layerSizes) {//in the future change Data to List<Data> and get TrainingAlgorithm or Enum of it
+        dataClusters = new ArrayList<>();
+        divideDataIntoClusters(dataList, clusterSize);
         activationFunction = new ActivationFunction(functionType);
         trainingAlgorithm = new BackPropagation(learningRate, acceptedError);
 
         layers = initLayers(Arrays.asList(layerSizes));
         weightMatrices = initWeightMatrices();
         biasesAndWeights = initBiasesAndWeights();
+    }
+
+    private void divideDataIntoClusters(List<Data> dataList, int clusterSize) {
+        while (!dataList.isEmpty()) {
+            DataCluster cluster = new DataCluster(clusterSize);
+            dataList.removeAll(cluster.addData(dataList));
+            dataClusters.add(cluster);
+        }
     }
 
     private List<Layer> initLayers(List<Integer> layerSizes) {
@@ -54,16 +64,19 @@ public class Network {
     }
 
     public void train() {
-        outputPatterns.forEach(d -> outputPatterns.forEach(this::addPattern));
+        dataClusters.forEach(c -> addPatterns(c));
+    }
+
+    private void addPatterns(DataCluster cluster) {
+        cluster.forEach(c -> cluster.forEach(this::addPattern));
     }
 
     private void addPattern(Data outputPattern) {
         feedForward(outputPattern.getInputPointsAsNeurons());
-
         do {
             replaceWeights(trainingAlgorithm.computeOutputPattern(layers, weightMatrices, outputPattern));
             feedForward(outputPattern.getInputPointsAsNeurons());
-            System.out.printf("%.5f\n", layers.get(layers.size()-1).get(0).get());
+            //System.out.printf("%.5f\n", layers.get(layers.size()-1).get(0).get());
         } while (!trainingAlgorithm.hasLearned(layers.get(layers.size()-1), outputPattern));
     }
 
