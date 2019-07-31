@@ -76,8 +76,16 @@ public class Network {
         do {
             replaceWeights(trainingAlgorithm.computeOutputPattern(layers, weightMatrices, outputPattern));
             feedForward(outputPattern.getInputPointsAsNeurons());
-            //System.out.printf("%.5f\n", layers.get(layers.size()-1).get(0).get());
+            System.out.printf("%.5f\n", layers.get(layers.size()-1).get(0).get());
         } while (!trainingAlgorithm.hasLearned(layers.get(layers.size()-1), outputPattern));
+    }
+
+    public List<Double> compute(Data d) {
+        feedForward(d.getInputPointsAsNeurons());
+        return layers.get(layers.size()-1).stream()
+                .map(Neuron::new)
+                .mapToDouble(n -> n.get())
+                .collect(ArrayList::new,ArrayList::add,ArrayList::addAll);
     }
 
     private void replaceWeights(List<WeightsMat> newWeights) {
