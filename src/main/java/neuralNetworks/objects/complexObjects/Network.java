@@ -18,7 +18,6 @@ public class Network {
 
     private final List<Layer> layers;
     private final List<WeightsMat> weightMatrices;
-    private final List<BiasWeightPair> biasesAndWeights;
 
     private final List<DataCluster> dataClusters;
     private final ActivationFunction activationFunction;
@@ -33,7 +32,6 @@ public class Network {
 
         layers = initLayers(Arrays.asList(layerSizes));
         weightMatrices = initWeightMatrices();
-        biasesAndWeights = initBiasesAndWeights();
     }
 
     private void divideDataIntoClusters(List<Data> dataList, int clusterSize) {
@@ -57,29 +55,9 @@ public class Network {
                 .collect(Collectors.toList());
     }
 
-    private List<BiasWeightPair> initBiasesAndWeights() {
-        return layers.stream()
-                .skip(1)
-                .map(l -> new BiasWeightPair(l.size()))
-                .collect(Collectors.toList());
-    }
-
     public void train() {
         dataClusters.forEach(c -> addPatterns(c));
     }
-
-//    private void addPatterns(DataCluster cluster) {
-//        cluster.stream()
-//                .forEach(d -> replaceWeights(addUpWeightMats(weightMatrices, addPattern(d))));
-//    }
-//
-//    private List<WeightsMat> addUpWeightMats(List<WeightsMat> a, List<WeightsMat> b) {
-//        return IntStream.range(0, a.size())
-//                .mapToObj(m -> IntStream.range(0, a.get(m).size())
-//                        .mapToObj(v -> a.get(m).get(v).sum(b.get(m).get(v)))
-//                        .collect(Collectors.toCollection(WeightsMat::new)))
-//                .collect(Collectors.toList());
-//    }
 
     private void addPatterns(DataCluster cluster) {
         do {
@@ -91,8 +69,6 @@ public class Network {
         return cluster.stream()
                 .allMatch(d -> {
                     feedForward(d.getInputPointsAsNeurons());
-//                    System.out.printf("%.5f ", layers.get(layers.size()-1).get(0).get());
-//                    System.out.printf(d.getOutputPointsAsNeurons().toString() + "\n");
                     return trainingAlgorithm.hasLearned(layers.get(layers.size()-1), d);
                 });
     }
@@ -102,7 +78,6 @@ public class Network {
         replaceWeights(trainingAlgorithm.getAdjustedWeights(layers, weightMatrices, outputPattern));
         System.out.printf("%.5f ", layers.get(layers.size()-1).get(0).get());
         System.out.printf(outputPattern.getOutputPointsAsNeurons().toString() + "\n");
-        replaceBiasWeights(trainingAlgorithm.getAdjustedBiasWeightList(biasesAndWeights, layers, weightMatrices, outputPattern));
     }
 
     public List<Double> compute(Data d) {
@@ -118,28 +93,23 @@ public class Network {
         weightMatrices.addAll(newWeights);
     }
 
-    private void replaceBiasWeights(List<WeightVector> newWeights) {
-        IntStream.range(0, newWeights.size())
-                .forEach(i -> biasesAndWeights.get(i).setWeights(newWeights.get(i)));
-    }
-
     private void feedForward(Layer input) {
         updateInputNeurons(input);
         IntStream.range(0, layers.size())
-                .limit(layers.size()-1)
-                .forEach(i -> feedNextLayer(layers.get(i), weightMatrices.get(i), layers.get(i+1), biasesAndWeights.get(i)));
+                .skip(1)
+                .forEach(i -> feedNextLayer(layers.get(i-1), weightMatrices.get(i-1), layers.get(i)));
     }
 
     private void updateInputNeurons(Layer input) {
         layers.get(0).updateLayer(input);
     }
 
-    private void feedNextLayer(Layer prevLayer, WeightsMat weightsMat, Layer nextLayer, BiasWeightPair biasWeights) {
-        nextLayer.updateLayer(calcNextValues(weightsMat, prevLayer, biasWeights.getAdditionsToNextLayer()));
+    private void feedNextLayer(Layer prevLayer, WeightsMat weightsMat, Layer nextLayer) {
+        nextLayer.updateLayer(calcNextValues(weightsMat, prevLayer));
     }
 
-    private Layer calcNextValues(WeightsMat W, Layer a, WeightVector biasAdditions) {
-        return biasAdditions.sum(W.mulByNeurons(a)).stream()
+    private Layer calcNextValues(WeightsMat W, Layer a) {
+        return W.mulByNeurons(a).stream()
                 .map(activationFunction::process)
                 .map(Neuron::new)
                 .collect(Collectors.toCollection(Layer::new));
