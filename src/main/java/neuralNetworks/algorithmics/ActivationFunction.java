@@ -1,7 +1,5 @@
 package neuralNetworks.algorithmics;
 
-import dataTypes.NumberValue;
-import dataTypes.Value;
 import neuralNetworks.constants.enums.ActivationFunctionTypes;
 
 import java.util.HashMap;
@@ -27,8 +25,8 @@ public class ActivationFunction {
         functions.put(ActivationFunctionTypes.SOFTPLUS, this::softplus);
     }
 
-    public NumberValue process(Value<? extends Double> preProcessValue) {
-        return new NumberValue(functions.get(funcType).apply(preProcessValue.get()));
+    public double process(double preProcessValue) {
+        return functions.get(funcType).apply(preProcessValue);
     }
 
     private double sigmoid(double preProcessedValue) {

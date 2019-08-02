@@ -1,4 +1,3 @@
-import dataTypes.Data;
 import neuralNetworks.constants.enums.ActivationFunctionTypes;
 import neuralNetworks.constants.enums.TrainingAlgorithmTypes;
 import neuralNetworks.objects.complexObjects.Network;
