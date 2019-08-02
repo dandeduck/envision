@@ -30,7 +30,7 @@ public class Main {
         dataList.add(data2);
         dataList.add(data3);
 
-        Network net = new Network(dataList, 2, ActivationFunctionTypes.SIGMOID, TrainingAlgorithmTypes.BACK_PROPAGATION, 0.5, 0.1, 2, 3, 1);
+        Network net = new Network(dataList, 2, ActivationFunctionTypes.SIGMOID, TrainingAlgorithmTypes.BACK_PROPAGATION, 0.5, 2, 2, 1);
         net.train();
         System.out.println(net.compute(data1));
         System.out.println(net.compute(data));

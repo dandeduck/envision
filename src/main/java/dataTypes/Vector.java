@@ -19,13 +19,13 @@ public class Vector<V extends Value> extends ArrayList<Value> implements Value<V
         this(new ArrayList());
     }
 
+    public Vector(Value<? extends ArrayList<Value>> value) {
+        this(value.get());
+    }
+
     public Vector(int size, Supplier<V> constructor) {
         this();
         addAll(generateVector(size, constructor));
-    }
-
-    public Vector(Value<? extends ArrayList<Value>> value) {
-        this(value.get());
     }
 
     private List<V> generateVector(int size, Supplier<V> constructor) {

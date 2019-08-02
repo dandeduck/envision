@@ -2,7 +2,10 @@ package dataTypes;
 
 import neuralNetworks.objects.basicObjects.Neuron;
 
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Data {
@@ -23,11 +26,6 @@ public class Data {
         this(new ArrayList<>(inputSize),new ArrayList<>(outputSize));
     }
 
-
-    public double getOutputPoint(int index) {
-        return output.get(index);
-    }
-
     public void addOutput(double outputPoint) {
         output.add(outputPoint);
     }
@@ -45,16 +43,16 @@ public class Data {
             throw new IllegalArgumentException(ILLEGAL_DATA_MSG);
     }
 
-    public Vector<Neuron> getInputPointsAsNeurons() {
+    public Vector<NumberValue> getInput() {
         return input.stream()
-                .map(Neuron::new)
+                .map(NumberValue::new)
                 .collect(Collectors.toCollection(Vector::new));
 
     }
 
-    public Vector<Neuron> getOutputPointsAsNeurons() {
+    public Vector<NumberValue> getOutput() {
         return output.stream()
-                .map(Neuron::new)
+                .map(NumberValue::new)
                 .collect(Collectors.toCollection(Vector::new));
     }
 

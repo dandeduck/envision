@@ -2,6 +2,7 @@ package neuralNetworks.objects.complexObjects;
 
 import dataTypes.Data;
 import dataTypes.Matrix;
+import dataTypes.NumberValue;
 import dataTypes.Vector;
 import neuralNetworks.algorithmics.ActivationFunction;
 import neuralNetworks.algorithmics.TrainingAlgorithm;
@@ -24,28 +25,24 @@ public class Network {
     private final Matrix<Bias> biases;
     private final Vector<Matrix<Weight>> weightMatrices;
 
+    private int clusterSize;
+    private final List<Data> dataSet;
     private final List<DataCluster> dataClusters;
     private final ActivationFunction activationFunction;
     private final TrainingAlgorithm trainingAlgorithm;
 
-    public Network(List<Data> dataList, int clusterSize, ActivationFunctionTypes functionType, TrainingAlgorithmTypes algorithmType, double learningRate, Integer... layerSizes) {//in the future change Data to List<Data> and get TrainingAlgorithm or Enum of it
+    public Network(List<Data> dataList, int clusterSize, ActivationFunctionTypes functionType, TrainingAlgorithmTypes algorithmType, double learningRate, Integer... layerSizes) {
+        this.clusterSize = clusterSize;
+        dataSet = new ArrayList<>();
+        dataSet.addAll(dataList);
         dataClusters = new ArrayList<>();
-        Collections.shuffle(dataList);
-        divideDataIntoClusters(dataList, clusterSize);
+
         activationFunction = new ActivationFunction(functionType);
         trainingAlgorithm = algorithmType.getAlgorithm(learningRate);
 
         layers = initLayers(Arrays.asList(layerSizes));
         biases = initBiasMat();
         weightMatrices = initWeightMatrices();
-    }
-
-    private void divideDataIntoClusters(List<Data> dataList, int clusterSize) {
-        while (!dataList.isEmpty()) {
-            DataCluster cluster = new DataCluster(clusterSize);
-            dataList.removeAll(cluster.addData(dataList));
-            dataClusters.add(cluster);
-        }
     }
 
     private Matrix<Neuron> initLayers(List<Integer> layerSizes) {
@@ -71,7 +68,26 @@ public class Network {
     }
 
     public void train() {
-        dataClusters.forEach(c -> gradientDescent(c));
+        do {
+            shuffleAndDivideDataIntoClusters(dataSet);
+            dataClusters.forEach(c -> gradientDescent(c));
+
+            feedForward(dataClusters.get(0).get(0).getInput());
+            System.out.println(trainingAlgorithm.calcCost(layers.get(layers.size()-1),dataClusters.get(0).get(0).getOutput()));
+
+        } while(true);
+    }
+
+    private void shuffleAndDivideDataIntoClusters(List<Data> dataList) {
+        List<Data> tmp = new ArrayList<>();
+        tmp.addAll(dataList);
+        Collections.shuffle(tmp);
+
+        while (!dataList.isEmpty()) {
+            DataCluster cluster = new DataCluster(clusterSize);
+            tmp.removeAll(cluster.addData(tmp));
+            dataClusters.add(cluster);
+        }
     }
 
     public void gradientDescent(DataCluster cluster) {
@@ -89,26 +105,18 @@ public class Network {
     }
 
     private NetworkDescent calcDescent(Data data) {
-        feedForward(data.getInputPointsAsNeurons());
-        return trainingAlgorithm.calcDescent(layers, biases, weightMatrices, data.getOutputPointsAsNeurons());
+        feedForward(data.getInput());
+        return trainingAlgorithm.calcDescent(layers, biases, weightMatrices, data.getOutput());
     }
 
-    public List<Double> compute(Data d) {
-        feedForward(d.getInputPointsAsNeurons());
-        return layers.get(layers.size()-1).stream()
-                .map(Neuron::new)
-                .mapToDouble(n -> n.get())
-                .collect(ArrayList::new,ArrayList::add,ArrayList::addAll);
-    }
-
-    private void feedForward(Vector<Neuron> input) {
+    private void feedForward(Vector<NumberValue> input) {
         updateInputNeurons(input);
         IntStream.range(0, layers.size())
                 .skip(1)
                 .forEach(i -> feedNextLayer(layers.get(i-1), weightMatrices.get(i-1), layers.get(i), biases.get(i-1)));
     }
 
-    private void updateInputNeurons(Vector<Neuron> input) {
+    private void updateInputNeurons(Vector<NumberValue> input) {
         layers.get(0).set(input);
     }
 
@@ -118,5 +126,13 @@ public class Network {
 
     private Vector calcNextValues(Matrix<Weight> W, Vector<Neuron> a, Vector<Bias> b) {
         return W.mulByVector(a).sum(b).applyFunc(activationFunction::process);
+    }
+
+    public List<Double> compute(Data d) {
+        feedForward(d.getInput());
+        return layers.get(layers.size()-1).stream()
+                .map(Neuron::new)
+                .mapToDouble(n -> n.get())
+                .collect(ArrayList::new,ArrayList::add,ArrayList::addAll);
     }
 }

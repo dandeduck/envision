@@ -7,8 +7,6 @@ import neuralNetworks.objects.basicObjects.Neuron;
 import neuralNetworks.objects.basicObjects.Weight;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class NetworkDescent {
 
