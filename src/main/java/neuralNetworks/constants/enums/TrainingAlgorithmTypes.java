@@ -9,9 +9,9 @@ import java.util.Map;
 public enum TrainingAlgorithmTypes {
     BACK_PROPAGATION;
 
-    public TrainingAlgorithm getAlgorithm(double learningRate, double acceptedError) {
+    public TrainingAlgorithm getAlgorithm(double learningRate) {
         Map<TrainingAlgorithmTypes, TrainingAlgorithm> algorithms = new HashMap();
-        algorithms.put(BACK_PROPAGATION, new BackPropagation(learningRate, acceptedError));
+        algorithms.put(BACK_PROPAGATION, new BackPropagation(learningRate));
 
         return algorithms.get(this);
     }

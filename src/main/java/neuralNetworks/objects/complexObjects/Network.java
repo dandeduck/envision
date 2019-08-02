@@ -21,22 +21,22 @@ import java.util.stream.IntStream;
 public class Network {
 
     private final Matrix<Neuron> layers;
-    private final Matrix<Bias> biasMat;
+    private final Matrix<Bias> biases;
     private final Vector<Matrix<Weight>> weightMatrices;
 
     private final List<DataCluster> dataClusters;
     private final ActivationFunction activationFunction;
     private final TrainingAlgorithm trainingAlgorithm;
 
-    public Network(List<Data> dataList, int clusterSize, ActivationFunctionTypes functionType, TrainingAlgorithmTypes algorithmType, double learningRate, double acceptedError, Integer... layerSizes) {//in the future change Data to List<Data> and get TrainingAlgorithm or Enum of it
+    public Network(List<Data> dataList, int clusterSize, ActivationFunctionTypes functionType, TrainingAlgorithmTypes algorithmType, double learningRate, Integer... layerSizes) {//in the future change Data to List<Data> and get TrainingAlgorithm or Enum of it
         dataClusters = new ArrayList<>();
         Collections.shuffle(dataList);
         divideDataIntoClusters(dataList, clusterSize);
         activationFunction = new ActivationFunction(functionType);
-        trainingAlgorithm = algorithmType.getAlgorithm(learningRate, acceptedError);
+        trainingAlgorithm = algorithmType.getAlgorithm(learningRate);
 
         layers = initLayers(Arrays.asList(layerSizes));
-        biasMat = initBiasMat();
+        biases = initBiasMat();
         weightMatrices = initWeightMatrices();
     }
 
@@ -50,7 +50,7 @@ public class Network {
 
     private Matrix<Neuron> initLayers(List<Integer> layerSizes) {
         return layerSizes.stream()
-                .map(e -> new Vector<>(e, Neuron::new))
+                .map(e -> new Vector<Neuron>(e, Neuron::new))
                 .collect(Collectors.toCollection(Matrix::new));
     }
 
@@ -59,7 +59,7 @@ public class Network {
                 .limit(layers.size()-1)
                 .skip(1)
                 .map(Vector::new)
-                .map(l -> new Vector<>(l.size(), Bias::new))
+                .map(l -> new Vector<Bias>(l.size(), Bias::new))
                 .collect(Collectors.toCollection(Matrix::new));
     }
 
@@ -71,16 +71,26 @@ public class Network {
     }
 
     public void train() {
-        dataClusters.forEach(c -> addPatterns(c));
+        dataClusters.forEach(c -> gradientDescent(c));
     }
 
+    public void gradientDescent(DataCluster cluster) {
+        List<NetworkDescent> descents = new ArrayList<>();
+        cluster.forEach(d -> descents.add(calcDescent(d)));
 
+        descents.get(0).averageAdditions(descents);
+        applyDescent(descents.get(0));
+    }
 
-    private void learnPattern(Data outputPattern) {
-        feedForward(outputPattern.getInputPointsAsNeurons());
+    private void applyDescent(NetworkDescent descent) {
+        layers.sub(descent.getLayersDescent());
+        biases.sub(descent.getBiasesDescent());
+        weightMatrices.sub(descent.getWeightsDescent());
+    }
 
-        System.out.printf("%.5f ", layers.get(layers.size()-1).get(0).get());
-        System.out.printf(outputPattern.getOutputPointsAsNeurons() + "\n");
+    private NetworkDescent calcDescent(Data data) {
+        feedForward(data.getInputPointsAsNeurons());
+        return trainingAlgorithm.calcDescent(layers, biases, weightMatrices, data.getOutputPointsAsNeurons());
     }
 
     public List<Double> compute(Data d) {
@@ -95,7 +105,7 @@ public class Network {
         updateInputNeurons(input);
         IntStream.range(0, layers.size())
                 .skip(1)
-                .forEach(i -> feedNextLayer(layers.get(i-1), weightMatrices.get(i-1), layers.get(i), biasMat.get(i-1)));
+                .forEach(i -> feedNextLayer(layers.get(i-1), weightMatrices.get(i-1), layers.get(i), biases.get(i-1)));
     }
 
     private void updateInputNeurons(Vector<Neuron> input) {

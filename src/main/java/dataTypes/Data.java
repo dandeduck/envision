@@ -45,17 +45,17 @@ public class Data {
             throw new IllegalArgumentException(ILLEGAL_DATA_MSG);
     }
 
-    public Layer getInputPointsAsNeurons() {
+    public Vector<Neuron> getInputPointsAsNeurons() {
         return input.stream()
                 .map(Neuron::new)
-                .collect(Collectors.toCollection(Layer::new));
+                .collect(Collectors.toCollection(Vector::new));
 
     }
 
-    public Layer getOutputPointsAsNeurons() {
+    public Vector<Neuron> getOutputPointsAsNeurons() {
         return output.stream()
                 .map(Neuron::new)
-                .collect(Collectors.toCollection(Layer::new));
+                .collect(Collectors.toCollection(Vector::new));
     }
 
     @Override
