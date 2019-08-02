@@ -9,9 +9,9 @@ import neuralNetworks.objects.basicObjects.Weight;
 import neuralNetworks.objects.complexObjects.NetworkDescent;
 
 public abstract class TrainingAlgorithm {
-    public abstract NetworkDescent calcDescent(Matrix<Neuron> layers, Matrix<Bias> biases, Vector<Matrix<Weight>> weightMats, Vector<NumberValue> desiredOutput);
+    public abstract NetworkDescent calcDescent(Matrix<Neuron> layers, Matrix<Bias> biases, Vector<Matrix<Weight>> weightMats, Vector<Neuron> desiredOutput);
 
-    public double calcCost(Vector<Neuron> outputLayer, Vector<NumberValue> desiredOutput) {
+    public double calcCost(Vector<Neuron> outputLayer, Vector<Neuron> desiredOutput) {
         return new Neuron(desiredOutput.sub(outputLayer).getSum()).get();
     }
 }

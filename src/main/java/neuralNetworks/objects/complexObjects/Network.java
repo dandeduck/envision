@@ -12,10 +12,7 @@ import neuralNetworks.objects.basicObjects.Bias;
 import neuralNetworks.objects.basicObjects.Neuron;
 import neuralNetworks.objects.basicObjects.Weight;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -53,7 +50,6 @@ public class Network {
 
     private Matrix<Bias> initBiasMat() {
         return layers.stream()
-                .limit(layers.size()-1)
                 .skip(1)
                 .map(Vector::new)
                 .map(l -> new Vector<Bias>(l.size(), Bias::new))
@@ -70,6 +66,7 @@ public class Network {
     public void train() {
         do {
             shuffleAndDivideDataIntoClusters(dataSet);
+
             dataClusters.forEach(c -> gradientDescent(c));
 
             feedForward(dataClusters.get(0).get(0).getInput());
@@ -83,7 +80,7 @@ public class Network {
         tmp.addAll(dataList);
         Collections.shuffle(tmp);
 
-        while (!dataList.isEmpty()) {
+        while (!tmp.isEmpty()) {
             DataCluster cluster = new DataCluster(clusterSize);
             tmp.removeAll(cluster.addData(tmp));
             dataClusters.add(cluster);
@@ -109,14 +106,14 @@ public class Network {
         return trainingAlgorithm.calcDescent(layers, biases, weightMatrices, data.getOutput());
     }
 
-    private void feedForward(Vector<NumberValue> input) {
+    private void feedForward(Vector<Neuron> input) {
         updateInputNeurons(input);
         IntStream.range(0, layers.size())
                 .skip(1)
                 .forEach(i -> feedNextLayer(layers.get(i-1), weightMatrices.get(i-1), layers.get(i), biases.get(i-1)));
     }
 
-    private void updateInputNeurons(Vector<NumberValue> input) {
+    private void updateInputNeurons(Vector<Neuron> input) {
         layers.get(0).set(input);
     }
 
@@ -124,8 +121,8 @@ public class Network {
         nextLayer.set(calcNextValues(weightsMat, prevLayer, layerBiases));
     }
 
-    private Vector calcNextValues(Matrix<Weight> W, Vector<Neuron> a, Vector<Bias> b) {
-        return W.mulByVector(a).sum(b).applyFunc(activationFunction::process);
+    private Vector<Neuron> calcNextValues(Matrix<Weight> W, Vector<Neuron> a, Vector<Bias> b) {
+        return new Vector<>((Collection) W.transpose().mulByVector(a).sum(b).applyFunc(activationFunction::process));
     }
 
     public List<Double> compute(Data d) {

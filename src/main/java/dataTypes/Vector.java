@@ -55,7 +55,7 @@ public class Vector<V extends Value> extends ArrayList<Value> implements Value<V
     public Vector<V> sum(Vector<? extends Value> v) {
         checkIfVectorValid(v);
         return IntStream.range(0, v.size())
-                .mapToObj(e -> v.get(e).sum(get(e)))
+                .mapToObj(e -> v.get(e).sum(get(e).get()))
                 .collect(Collectors.toCollection(Vector::new));
     }
 
@@ -63,7 +63,7 @@ public class Vector<V extends Value> extends ArrayList<Value> implements Value<V
     public Vector<V> mul(Vector<? extends Value> v) {//just dot
         checkIfVectorValid(v);
         return IntStream.range(0, v.size())
-                .mapToObj(e -> v.get(e).mul(get(e)))
+                .mapToObj(e -> v.get(e).mul(get(e).get()))
                 .collect(Collectors.toCollection(Vector::new));
     }
 
@@ -71,13 +71,13 @@ public class Vector<V extends Value> extends ArrayList<Value> implements Value<V
     public Vector<V> sub(Vector<? extends Value> v) {
         checkIfVectorValid(v);
         return IntStream.range(0, v.size())
-                .mapToObj(e -> v.get(e).sub(get(e)))
+                .mapToObj(e -> v.get(e).sub(get(e).get()))
                 .collect(Collectors.toCollection(Vector::new));
     }
 
     public Vector<V> scale(Value val) {
         return stream()
-                .map(e -> e.mul(val))
+                .map(e -> e.mul(val.get()))
                 .collect(Collectors.toCollection(Vector::new));
     }
 
@@ -97,7 +97,7 @@ public class Vector<V extends Value> extends ArrayList<Value> implements Value<V
 
         stream()
                 .skip(1)
-                .forEach(v -> sum.set(sum.sum((Value) v.get()).get()));
+                .forEach(v -> sum.set(sum.sum(v.get()).get()));
 
         return sum;
     }

@@ -43,16 +43,16 @@ public class Data {
             throw new IllegalArgumentException(ILLEGAL_DATA_MSG);
     }
 
-    public Vector<NumberValue> getInput() {
+    public Vector<Neuron> getInput() {
         return input.stream()
-                .map(NumberValue::new)
+                .map(Neuron::new)
                 .collect(Collectors.toCollection(Vector::new));
 
     }
 
-    public Vector<NumberValue> getOutput() {
+    public Vector<Neuron> getOutput() {
         return output.stream()
-                .map(NumberValue::new)
+                .map(Neuron::new)
                 .collect(Collectors.toCollection(Vector::new));
     }
 

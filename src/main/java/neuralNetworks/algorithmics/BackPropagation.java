@@ -33,7 +33,7 @@ public class BackPropagation extends TrainingAlgorithm {
     }
 
     @Override
-    public NetworkDescent calcDescent(Matrix<Neuron> layers, Matrix<Bias> biases, Vector<Matrix<Weight>> weightMats, Vector<NumberValue> desiredOutput) {
+    public NetworkDescent calcDescent(Matrix<Neuron> layers, Matrix<Bias> biases, Vector<Matrix<Weight>> weightMats, Vector<Neuron> desiredOutput) {
         clearDescents();
         reverseNetwork(layers, biases, weightMats);
 
@@ -58,9 +58,9 @@ public class BackPropagation extends TrainingAlgorithm {
         Collections.reverse(weightMats);
     }
 
-    private void backProp(Matrix<Neuron> layers, Matrix<Bias> biases, Vector<Matrix<Weight>> weightMats, Vector<NumberValue> wantedOutput, int index) {
+    private void backProp(Matrix<Neuron> layers, Matrix<Bias> biases, Vector<Matrix<Weight>> weightMats, Vector<Neuron> desiredOutput, int index) {
         if(isOutputLayer(index))
-            backPropOutputLayer(layers, biases, weightMats, wantedOutput);
+            backPropOutputLayer(layers, biases, weightMats, desiredOutput);
         else
             normalBackProp(layers, biases, weightMats, index);
     }
@@ -69,16 +69,16 @@ public class BackPropagation extends TrainingAlgorithm {
         return index == 0;
     }
 
-    private void backPropOutputLayer(Matrix<Neuron> layers, Matrix<Bias> biases, Vector<Matrix<Weight>> weightMats, Vector<NumberValue> wantedOutput) {
+    private void backPropOutputLayer(Matrix<Neuron> layers, Matrix<Bias> biases, Vector<Matrix<Weight>> weightMats, Vector<Neuron> desiredOutput) {
         Vector<Neuron> output = layers.get(0);
         Vector<Neuron> input = layers.get(1);
-        Vector<Neuron> errors = getOutputError(output, wantedOutput);//OK?
+        Vector<Neuron> errors = getOutputError(output, desiredOutput);//OK?
 
         updateDescent(input, errors);
         prevErrors.set(errors);
     }
 
-    private Vector<Neuron> getOutputError(Vector<Neuron> outputLayer, Vector<NumberValue> wantedOutput) {
+    private Vector<Neuron> getOutputError(Vector<Neuron> outputLayer, Vector<Neuron> wantedOutput) {
         return outputLayer.sub(wantedOutput); // A - Y
     }
 
@@ -93,17 +93,17 @@ public class BackPropagation extends TrainingAlgorithm {
 
     private void updateDescent(Vector<Neuron> input, Vector<Neuron> errors) {
         weightsDescent.add(calcWeightsDescent(input, errors));
-        biasesDescent.add(calcBiasesDescent(input, errors));
+        biasesDescent.add(calcBiasesDescent(errors));
     }
 
     private Matrix calcWeightsDescent(Vector<Neuron> input, Vector<Neuron> errors) {
-        return IntStream.range(0, input.size())
-                .mapToObj(e -> input.mul(errors).scale(new NumberValue(learningRate)))//dW = input * e * eta
+        return input.stream()
+                .map(i -> errors.scale(i).scale(new Neuron(learningRate)))//dW = input * e * eta
                 .collect(Collectors.toCollection(Matrix::new));
     }
 
-    private Vector calcBiasesDescent(Vector<Neuron> input, Vector<Neuron> errors) {
-        return input.mul(errors.scale(new NumberValue(learningRate)));
+    private Vector calcBiasesDescent(Vector<Neuron> errors) {
+        return errors.scale(new NumberValue(learningRate));
     }
 
     //prevErrors as in the last calculated errors but the rest are by how they're located in the network
