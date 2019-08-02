@@ -1,7 +1,6 @@
 package dataTypes;
 
 import neuralNetworks.objects.basicObjects.Neuron;
-import neuralNetworks.objects.complexObjects.Layer;
 
 import java.util.*;
 import java.util.stream.Collectors;

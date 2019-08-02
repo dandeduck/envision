@@ -1,9 +1,12 @@
 package neuralNetworks.objects.complexObjects;
 
 import dataTypes.Matrix;
+import dataTypes.Vector;
 import neuralNetworks.objects.basicObjects.Bias;
+import neuralNetworks.objects.basicObjects.Neuron;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class NetworkAdditions {
@@ -18,6 +21,23 @@ public class NetworkAdditions {
         this.weightAdditions = weightAdditions;
     }
 
+    private void setLayerAdditions(List<? extends Vector> additions) {
+        layerAdditions.clear();
+        layerAdditions.stream()
+                .map(Layer::new)
+                .collect(Collectors.toList());
+    }
+
+    private void setBiasAdditions(Matrix<Bias> additions) {
+        biasAdditions.clear();
+        biasAdditions.addAll(additions);
+    }
+
+    private void setWeightAdditions(List<WeightsMat> additions) {
+        weightAdditions.clear();
+        weightAdditions.addAll(additions);
+    }
+
     public List<Layer> getLayerAdditions() {
         return layerAdditions;
     }
@@ -30,12 +50,21 @@ public class NetworkAdditions {
         return weightAdditions;
     }
 
-    public void averageAdditions(NetworkAdditions additions) {
-
+    public void averageAdditions(List<NetworkAdditions> additions) {
+        additions.forEach();
     }
 
-    private void averageLayerAdditions(List<Layer> additions) {
-        IntStream.range(0, layerAdditions.size())
-                .forEach();
+    private void sum(NetworkAdditions additions) {
+        setLayerAdditions(sumLists(layerAdditions, additions.getLayerAdditions()));
+        setBiasAdditions(biasAdditions.sum(additions.getBiasAdditions()));
+        setWeightAdditions();
     }
+
+    private List<Vector> sumLists(List<? extends Vector> a, List<? extends Vector> b) {
+        return IntStream.range(0, a.size())
+                .mapToObj(i -> a.get(i).sum(b.get(i)))
+                .collect(Collectors.toList());
+    }
+
+    private
 }
