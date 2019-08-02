@@ -5,12 +5,12 @@ import neuralNetworks.constants.enums.ActivationFunctionTypes;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.DoubleFunction;
+import java.util.function.Function;
 
 public class ActivationFunction {
 
     private final ActivationFunctionTypes funcType;
-    private final Map<ActivationFunctionTypes, DoubleFunction<Double>> functions;
+    private final Map<ActivationFunctionTypes, Function<Double,Double>> functions;
 
     private double processedValue;
 
@@ -26,8 +26,8 @@ public class ActivationFunction {
         functions.put(ActivationFunctionTypes.SOFTPLUS, this::softplus);
     }
 
-    public double process(Value<Double> preProcessValue) {
-        return functions.get(funcType).apply(preProcessValue.get());
+    public Value process(Value preProcessValue) {
+        return new Value(functions.get(funcType).apply(preProcessValue.get()));
     }
 
     private double sigmoid(double preProcessedValue) {

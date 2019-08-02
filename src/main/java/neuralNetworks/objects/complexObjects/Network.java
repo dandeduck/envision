@@ -1,10 +1,13 @@
 package neuralNetworks.objects.complexObjects;
 
 import dataTypes.Data;
+import dataTypes.Matrix;
+import dataTypes.Vector;
 import neuralNetworks.algorithmics.ActivationFunction;
 import neuralNetworks.algorithmics.TrainingAlgorithm;
 import neuralNetworks.constants.enums.ActivationFunctionTypes;
 import neuralNetworks.constants.enums.TrainingAlgorithmTypes;
+import neuralNetworks.objects.basicObjects.Bias;
 import neuralNetworks.objects.basicObjects.Neuron;
 
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ import java.util.stream.IntStream;
 public class Network {
 
     private final List<Layer> layers;
+    private final Matrix<Bias> biasMat;
     private final List<WeightsMat> weightMatrices;
 
     private final List<DataCluster> dataClusters;
@@ -31,6 +35,7 @@ public class Network {
         trainingAlgorithm = algorithmType.getAlgorithm(learningRate, acceptedError);
 
         layers = initLayers(Arrays.asList(layerSizes));
+        biasMat = initBiasMat();
         weightMatrices = initWeightMatrices();
     }
 
@@ -48,6 +53,20 @@ public class Network {
                 .collect(Collectors.toList());
     }
 
+    private Matrix<Bias> initBiasMat() {
+        return layers.stream()
+                .limit(layers.size()-1)
+                .skip(1)
+                .map(l -> initBiases(l.size()))
+                .collect(Collectors.toCollection(Matrix::new));
+    }
+
+    private Vector<Bias> initBiases(int layerSize) {
+        return IntStream.range(0, layerSize)
+                .mapToObj(Bias::new)
+                .collect(Collectors.toCollection(Vector::new));
+    }
+
     private List<WeightsMat> initWeightMatrices() {
         return IntStream.range(0, layers.size())
                 .skip(1)
@@ -59,23 +78,11 @@ public class Network {
         dataClusters.forEach(c -> addPatterns(c));
     }
 
-    private void addPatterns(DataCluster cluster) {
-        do {
-            cluster.forEach(this::learnPattern);
-        } while (!hasLearnedCluster(cluster));
-    }
 
-    private boolean hasLearnedCluster(DataCluster cluster) {
-        return cluster.stream()
-                .allMatch(d -> {
-                    feedForward(d.getInputPointsAsNeurons());
-                    return trainingAlgorithm.hasLearned(layers.get(layers.size()-1), d);
-                });
-    }
 
     private void learnPattern(Data outputPattern) {
         feedForward(outputPattern.getInputPointsAsNeurons());
-        replaceWeights(trainingAlgorithm.getAdjustedWeights(layers, weightMatrices, outputPattern));
+
         System.out.printf("%.5f ", layers.get(layers.size()-1).get(0).get());
         System.out.printf(outputPattern.getOutputPointsAsNeurons().toString() + "\n");
     }
@@ -109,9 +116,6 @@ public class Network {
     }
 
     private Layer calcNextValues(WeightsMat W, Layer a) {
-        return W.mulByNeurons(a).stream()
-                .map(activationFunction::process)
-                .map(Neuron::new)
-                .collect(Collectors.toCollection(Layer::new));
+        return new Layer(W.mulByNeurons(a).applyFunc(activationFunction::process));
     }
 }
