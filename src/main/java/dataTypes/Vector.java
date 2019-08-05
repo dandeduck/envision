@@ -2,6 +2,7 @@ package dataTypes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -10,25 +11,36 @@ public abstract class Vector<V>{
 
     private final List<V> list;
 
-    public Vector(int dimensions) {
+    public Vector() {
         list = new ArrayList<>();
-        list.addAll(generateValues(dimensions));
     }
 
-    private List<V> generateValues(int dimensions) {
+    public Vector(List<V> list) {
+        this();
+        list.addAll(list);
+    }
+
+    public Vector(int dimensions, V value) {
+        this();
+        list.addAll(generateSameList(dimensions, value));
+    }
+
+    private List<V> generateSameList(int dimensions, V value) {
+        return IntStream.range(0, dimensions)
+                .mapToObj(e -> value)
+                .collect(Collectors.toList());
+    }
+
+    protected List<V> generateList(int dimensions) {
         return IntStream.range(0, dimensions)
                 .mapToObj(this::generateValue)
                 .collect(Collectors.toList());
     }
 
-    abstract protected V generateValue(int index);
+    protected abstract V generateValue(int index);
 
     public V get(int index) {
         return list.get(index);
-    }
-
-    public int dimensions() {
-        return list.size();
     }
 
     public Stream<V> stream() {
@@ -36,36 +48,46 @@ public abstract class Vector<V>{
     }
 
     public IntStream lengthStream() {
-        return IntStream.range(0, dimensions());
+        return IntStream.range(0, list.size());
+    }
+    public int dimensions() {
+        return list.size();
     }
 
-    public Vector<V> multiply(Vector<V> otherList) {
+    public List<V> multiply(Vector<V> list) {
         return lengthStream()
-                .mapToObj(index -> multiplyValues(get(index), otherList.get(index)))
-                .collect(Collectors.toCollection(Vector::new));
+                .mapToObj(index -> multiplyValues(get(index), list.get(index)))
+                .collect(Collectors.toList());
     }
 
-    public Vector<V> scale(V val) {
+    protected abstract V multiplyValues(V v1, V v2);
+
+    public List<V> scale(V scalar) {
+        return stream()
+                .map(value -> multiplyValues(value, scalar))
+                .collect(Collectors.toList());
+    }
+
+
+    public List<V> add(Vector<V> list) {
         return lengthStream()
-                .mapToObj(index -> multiplyValues(get(index), val))
-                .collect(Collectors.toCollection(Vector::new));
+                .mapToObj(index -> addValues(get(index), list.get(index)))
+                .collect(Collectors.toList());
     }
 
-    abstract protected V multiplyValues(V v1, V v2);
+    protected abstract V addValues(V v1, V v2);
 
-    public Vector<V> add(Vector<V> otherList) {
+    public List<V> subtract(Vector<V> list) {
         return lengthStream()
-                .mapToObj(index -> addValues(get(index), otherList.get(index)))
-                .collect(Collectors.toCollection(Vector::new));
+                .mapToObj(index -> subtractValues(get(index), list.get(index)))
+                .collect(Collectors.toList());
     }
 
-    abstract protected V addValues(V v1, V v2);
+    protected abstract V subtractValues(V v1, V v2);
 
-    public Vector<V> subtract(Vector<V> otherList) {
-        return lengthStream()
-                .mapToObj(index -> subtractValues(get(index), otherList.get(index)))
-                .collect(Collectors.toCollection(Vector::new));
+    public List<V> applyFunction(Function<V,V> func) {
+        return stream()
+                .map(func)
+                .collect(Collectors.toList());
     }
-
-    abstract protected V subtractValues(V v1, V v2);
 }
