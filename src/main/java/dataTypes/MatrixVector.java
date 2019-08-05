@@ -9,6 +9,13 @@ public class MatrixVector extends Vector<Matrix> {
     private final List<Integer> matSizes;
     private final List<Integer> vectorSizes;
 
+    public MatrixVector() {
+        super();
+
+        matSizes = null;
+        vectorSizes = null;
+    }
+
     public MatrixVector(List<Integer> matSizes, List<Integer> vectorSizes) {
         super();
 
@@ -60,5 +67,9 @@ public class MatrixVector extends Vector<Matrix> {
         return new MatrixVector(stream()
                 .map(matrix -> matrix.scale(scalar))
                 .collect(Collectors.toList()));
+    }
+
+    public MatrixVector addMatrix(Matrix matrix) {
+        return new MatrixVector(super.addValue(matrix));
     }
 }

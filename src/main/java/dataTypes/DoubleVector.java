@@ -10,6 +10,12 @@ public class DoubleVector extends Vector<Double>{
 
     private final Random rnd;
 
+    public DoubleVector() {
+        super();
+
+        rnd = null;
+    }
+
     public DoubleVector(int dimensions) {
         super();
         rnd = new Random();
@@ -72,5 +78,9 @@ public class DoubleVector extends Vector<Double>{
         return new DoubleVector(stream()
                 .map(value -> multiplyValues(value, scalar))
                 .collect(Collectors.toList()));
+    }
+
+    public DoubleVector addDouble(Double value) {
+        return new DoubleVector(super.addValue(value));
     }
 }

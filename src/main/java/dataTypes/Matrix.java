@@ -3,11 +3,16 @@ package dataTypes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class Matrix extends Vector<DoubleVector> {
 
     private final List<Integer> vectorsDimensions;
+
+    public Matrix() {
+        super();
+
+        vectorsDimensions = null;
+    }
 
     public Matrix(List<DoubleVector> list) {
         super(list);
@@ -78,5 +83,9 @@ public class Matrix extends Vector<DoubleVector> {
         return new Matrix(stream()
                 .map(vector -> vector.scale(scalar))
                 .collect(Collectors.toList()));
+    }
+
+    public Matrix addVector(DoubleVector vector) {
+        return new Matrix(super.addValue(vector));
     }
 }

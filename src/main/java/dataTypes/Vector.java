@@ -1,6 +1,7 @@
 package dataTypes;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -82,5 +83,21 @@ public abstract class Vector<V>{
         return stream()
                 .map(func)
                 .collect(Collectors.toList());
+    }
+
+    public List<V> addValue(V value) {
+        List<V> tmp = new ArrayList<>();
+        tmp.addAll(list);
+        tmp.add(value);
+
+        return tmp;
+    }
+
+    public List<V> reverse() {
+        List<V> tmp = new ArrayList<>();
+        tmp.addAll(list);
+        Collections.reverse(tmp);
+
+        return tmp;
     }
 }
