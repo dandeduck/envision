@@ -18,6 +18,11 @@ public class DoubleVector extends Vector<Double>{
         rnd = null;
     }
 
+    public DoubleVector(int size, Double value) {
+        super(size, value);
+        rnd = null;
+    }
+
     @Override
     protected Double generateValue(int index) {
         return rnd.nextDouble() * rnd.nextDouble();

@@ -16,6 +16,13 @@ public class MatrixVector extends Vector<Matrix> {
         generateList(matSizes.size());
     }
 
+    public MatrixVector(List<Matrix> list) {
+        super(list);
+
+        matSizes = null;
+        vectorSizes = null;
+    }
+
     @Override
     protected Matrix generateValue(int index) {
         return new Matrix(matSizes.get(index), vectorSizes.get(index));
