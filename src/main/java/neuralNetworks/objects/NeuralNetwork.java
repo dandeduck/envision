@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.DoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -72,7 +73,7 @@ public class NeuralNetwork {
     private void descent(NetworkGradient gradient) {
         neuronLayers.subtract(gradient.getNeuronLayersDescent());
         biasLayers.subtract(gradient.getBiasLayersDescent());
-        weightMats = new MatrixVector(weightMats.subtract(gradient.getWeightMatsDescent()));
+        weightMats = weightMats.subtract(gradient.getWeightMatsDescent());
     }
 
     private NetworkGradient calcAverageGradientDescentStep(NetworkPatternsCluster cluster) {
@@ -114,6 +115,6 @@ public class NeuralNetwork {
     }
 
     private DoubleVector calcNextNeuronLayer(DoubleVector inputLayer, Matrix weightsMat, DoubleVector inputLayerBiases) {
-        return new DoubleVector(new DoubleVector(weightsMat.transpose().multiplyByVector(inputLayer).add(inputLayerBiases)).applyFunction(activationFunction::process));
+        return weightsMat.transpose().multiplyByVector(inputLayer).add(inputLayerBiases).applyFunction((DoubleFunction<Double>) activationFunction::process);
     }
 }

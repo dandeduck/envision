@@ -9,6 +9,6 @@ public abstract class TrainingAlgorithm {
     public abstract NetworkGradient calcGradientDescentStep(Matrix neuronLayers, Matrix biasLayers, MatrixVector weightMats, DoubleVector outputPattern);
 
     public double calcCost(DoubleVector outputLayer, DoubleVector desiredOutput) {
-        return Math.pow(new DoubleVector(desiredOutput.subtract(outputLayer)).sum(),2);
+        return Math.pow(desiredOutput.subtract(outputLayer).sum(),2);
     }
 }

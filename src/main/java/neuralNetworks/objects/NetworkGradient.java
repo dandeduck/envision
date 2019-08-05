@@ -1,6 +1,5 @@
 package neuralNetworks.objects;
 
-import dataTypes.DoubleVector;
 import dataTypes.Matrix;
 import dataTypes.MatrixVector;
 
@@ -29,17 +28,17 @@ public class NetworkGradient {
     }
 
     public NetworkGradient add(NetworkGradient gradient) {
-        Matrix neuronLayersDescentSum = new Matrix(neuronLayersDescent.add(gradient.getNeuronLayersDescent()));
-        Matrix biasLayersDescentSum = new Matrix(biasLayersDescent.add(gradient.getBiasLayersDescent()));
-        MatrixVector weightMatsDescentSum = new MatrixVector(weightMatsDescent.add(gradient.getWeightMatsDescent()));
+        Matrix neuronLayersDescentSum = neuronLayersDescent.add(gradient.getNeuronLayersDescent());
+        Matrix biasLayersDescentSum = biasLayersDescent.add(gradient.getBiasLayersDescent());
+        MatrixVector weightMatsDescentSum = weightMatsDescent.add(gradient.getWeightMatsDescent());
 
         return new NetworkGradient(neuronLayersDescentSum, biasLayersDescentSum, weightMatsDescentSum);
     }
 
     public NetworkGradient divide(double val) {
-        Matrix neuronLayersDescentProduct = new Matrix(neuronLayersDescent.scale(new DoubleVector()));
-        Matrix biasLayersDescentProduct = new Matrix(biasLayersDescent.multiply(gradient.getBiasLayersDescent()));
-        MatrixVector weightMatsDescentProduct = new MatrixVector(weightMatsDescent.multiply(gradient.getWeightMatsDescent()));
+        Matrix neuronLayersDescentProduct = neuronLayersDescent.scale(val);
+        Matrix biasLayersDescentProduct = biasLayersDescent.scale(val);
+        MatrixVector weightMatsDescentProduct = weightMatsDescent.scale(val);
 
         return new NetworkGradient(neuronLayersDescentProduct, biasLayersDescentProduct, weightMatsDescentProduct);
     }

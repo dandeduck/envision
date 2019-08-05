@@ -62,13 +62,6 @@ public abstract class Vector<V>{
 
     protected abstract V multiplyValues(V v1, V v2);
 
-    public List<V> scale(V scalar) {
-        return stream()
-                .map(value -> multiplyValues(value, scalar))
-                .collect(Collectors.toList());
-    }
-
-
     public List<V> add(Vector<V> list) {
         return lengthStream()
                 .mapToObj(index -> addValues(get(index), list.get(index)))

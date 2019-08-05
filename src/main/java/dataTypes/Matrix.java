@@ -28,6 +28,18 @@ public class Matrix extends Vector<DoubleVector> {
         vectorsDimensions = null;
     }
 
+    public Matrix multiply(Matrix matrix) {
+        return new Matrix(super.multiply(matrix));
+    }
+
+    public Matrix add(Matrix matrix) {
+        return new Matrix(super.add(matrix));
+    }
+
+    public Matrix subtract(Matrix matrix) {
+        return new Matrix(super.subtract(matrix));
+    }
+
     @Override
     protected DoubleVector generateValue(int index) {
         return new DoubleVector(vectorsDimensions.get(index));
@@ -35,22 +47,22 @@ public class Matrix extends Vector<DoubleVector> {
 
     @Override
     protected DoubleVector multiplyValues(DoubleVector v1, DoubleVector v2) {
-        return new DoubleVector(v1.multiply(v2));
+        return v1.multiply(v2);
     }
 
     @Override
     protected DoubleVector addValues(DoubleVector v1, DoubleVector v2) {
-        return new DoubleVector(v1.add(v2));
+        return v1.add(v2);
     }
 
     @Override
     protected DoubleVector subtractValues(DoubleVector v1, DoubleVector v2) {
-        return new DoubleVector(v1.subtract(v2));
+        return v1.subtract(v2);
     }
 
     public DoubleVector multiplyByVector(DoubleVector vector) {
         return new DoubleVector(stream()
-                .map(matVector -> new DoubleVector(matVector.multiply(vector)).sum())
+                .map(matVector -> matVector.multiply(vector).sum())
                 .collect(Collectors.toList()));
     }
 
@@ -59,6 +71,12 @@ public class Matrix extends Vector<DoubleVector> {
                 .mapToObj(innerIndex -> new DoubleVector(lengthStream()
                         .mapToObj(outerIndex -> get(outerIndex).get(innerIndex))
                         .collect(Collectors.toList())))
+                .collect(Collectors.toList()));
+    }
+
+    public Matrix scale(Double scalar) {
+        return new Matrix(stream()
+                .map(vector -> vector.scale(scalar))
                 .collect(Collectors.toList()));
     }
 }
