@@ -33,20 +33,27 @@ public class NeuralNetwork {
         activationFunction = new ActivationFunction(activationType);
 
         neuronLayers = new Matrix(layerSizes.size(), layerSizes);
-        biasLayers = new Matrix(layerSizes.size(), layerSizes);
+        biasLayers = initBiases(layerSizes);
         weightMats = new MatrixVector(innerSizes(layerSizes), outerSizes(layerSizes));
     }
 
+    private Matrix initBiases(List<Integer> layerSizes) {
+        List<Integer> tmp = new ArrayList<>();
+        tmp.addAll(layerSizes);
+        tmp.remove(0);
+
+        return new Matrix(tmp.size(), tmp);
+    }
+
     private List<Integer> innerSizes(List<Integer> layerSizes) {
-        return IntStream.range(0, layerSizes.size())
-                .filter(index -> index%2 != 0)
+        return IntStream.range(0, layerSizes.size()-1)
                 .mapToObj(layerSizes::get)
                 .collect(Collectors.toList());
     }
 
     private List<Integer> outerSizes(List<Integer> layerSizes) {
         return IntStream.range(0, layerSizes.size())
-                .filter(index -> index%2 == 0)
+                .skip(1)
                 .mapToObj(layerSizes::get)
                 .collect(Collectors.toList());
     }
@@ -54,24 +61,42 @@ public class NeuralNetwork {
     public void train(TrainingAlgorithmTypes algorithmType, double learningRate, List<NetworkPattern> networkPatterns, int clusterSize) {
         trainingAlgorithm = algorithmType.getAlgorithm(learningRate);
 
+        int counter = 0;
+
         while(true) {//should be a while error is below a certain number, but not for tests
             List<NetworkPatternsCluster> clusters = getClusters(networkPatterns, clusterSize);
             clusters.forEach(cluster -> descent(calcAverageGradientDescentStep(cluster)));
+
+            if(counter>=10) {
+                System.out.printf("%2f\n",getOverAllCost(networkPatterns));
+                counter = 0;
+            }
+            counter++;
         }
+    }
+
+    private double getOverAllCost(List<NetworkPattern> networkPatterns) {
+        return networkPatterns.stream()
+                .mapToDouble(pattern ->{
+                    feedForward(pattern.getInput());
+                    return trainingAlgorithm.calcCost(neuronLayers.get(neuronLayers.dimensions()-1), pattern.getOutput());
+                })
+                .sum();
     }
 
     private List<NetworkPatternsCluster> getClusters(List<NetworkPattern> networkPatterns, int clusterSize) {
         List<NetworkPatternsCluster> clusters = new ArrayList<>();
-        Collections.shuffle(networkPatterns);
+        List<NetworkPattern> tmp = new ArrayList<>();
+        tmp.addAll(networkPatterns);
+        Collections.shuffle(tmp);
 
-        while(!networkPatterns.isEmpty())
-            clusters.add(new NetworkPatternsCluster(networkPatterns, clusterSize));
+        while(!tmp.isEmpty())
+            clusters.add(new NetworkPatternsCluster(tmp, clusterSize));
 
         return clusters;
     }
 
     private void descent(NetworkGradient gradient) {
-        neuronLayers.subtract(gradient.getNeuronLayersDescent());
         biasLayers.subtract(gradient.getBiasLayersDescent());
         weightMats = weightMats.subtract(gradient.getWeightMatsDescent());
     }
@@ -86,7 +111,7 @@ public class NeuralNetwork {
 
     private NetworkGradient calcGradientDescentStep(NetworkPattern pattern) {
         feedForward(pattern.getInput());
-        return trainingAlgorithm.calcGradientDescentStep(neuronLayers, biasLayers, weightMats, pattern.getOutput());
+        return trainingAlgorithm.calcGradientDescentStep(neuronLayers, weightMats, pattern.getOutput());
     }
 
     private NetworkGradient averageGradient(List<NetworkGradient> gradients) {

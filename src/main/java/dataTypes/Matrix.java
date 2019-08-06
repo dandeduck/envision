@@ -3,6 +3,7 @@ package dataTypes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Matrix extends Vector<DoubleVector> {
 
@@ -28,9 +29,16 @@ public class Matrix extends Vector<DoubleVector> {
     }
 
     public Matrix(int matSize, int vectorSize) {
-        super(matSize, new DoubleVector(vectorSize));
+        super();
 
-        vectorsDimensions = null;
+        vectorsDimensions = createSameList(matSize, vectorSize);
+        generateList(matSize);
+    }
+
+    private List<Integer> createSameList(int size, int value) {
+        return IntStream.range(0, size)
+                .mapToObj(e -> value)
+                .collect(Collectors.toList());
     }
 
     public Matrix multiply(Matrix matrix) {

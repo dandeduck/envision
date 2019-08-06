@@ -18,7 +18,7 @@ public abstract class Vector<V>{
 
     public Vector(List<V> list) {
         this();
-        list.addAll(list);
+        this.list.addAll(list);
     }
 
     public Vector(int dimensions, V value) {
@@ -32,10 +32,10 @@ public abstract class Vector<V>{
                 .collect(Collectors.toList());
     }
 
-    protected List<V> generateList(int dimensions) {
-        return IntStream.range(0, dimensions)
+    protected void generateList(int dimensions) {
+        list.addAll(IntStream.range(0, dimensions)
                 .mapToObj(this::generateValue)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     protected abstract V generateValue(int index);
@@ -55,25 +55,25 @@ public abstract class Vector<V>{
         return list.size();
     }
 
-    public List<V> multiply(Vector<V> list) {
+    public List<V> multiply(Vector<V> vector) {
         return lengthStream()
-                .mapToObj(index -> multiplyValues(get(index), list.get(index)))
+                .mapToObj(index -> multiplyValues(get(index), vector.get(index)))
                 .collect(Collectors.toList());
     }
 
     protected abstract V multiplyValues(V v1, V v2);
 
-    public List<V> add(Vector<V> list) {
+    public List<V> add(Vector<V> vector) {
         return lengthStream()
-                .mapToObj(index -> addValues(get(index), list.get(index)))
+                .mapToObj(index -> addValues(get(index), vector.get(index)))
                 .collect(Collectors.toList());
     }
 
     protected abstract V addValues(V v1, V v2);
 
-    public List<V> subtract(Vector<V> list) {
+    public List<V> subtract(Vector<V> vector) {
         return lengthStream()
-                .mapToObj(index -> subtractValues(get(index), list.get(index)))
+                .mapToObj(index -> subtractValues(get(index), vector.get(index)))
                 .collect(Collectors.toList());
     }
 
@@ -99,5 +99,10 @@ public abstract class Vector<V>{
         Collections.reverse(tmp);
 
         return tmp;
+    }
+
+    @Override
+    public String toString() {
+        return list.toString();
     }
 }
