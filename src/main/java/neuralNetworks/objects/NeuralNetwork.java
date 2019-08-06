@@ -25,6 +25,9 @@ public class NeuralNetwork {
     private Matrix biasLayers;
     private MatrixVector weightMats;
 
+    double sum;
+    int ccounter;
+
     public NeuralNetwork(ActivationFunctionTypes activationType, Integer... layerSizes) {
         this(activationType, Arrays.asList(layerSizes));
     }
@@ -63,19 +66,21 @@ public class NeuralNetwork {
 
         int counter = 0;
 
-        while(true) {//should be a while error is below a certain number, but not for tests
+        while(sum==0 || sum/ccounter > 0.1) {//should be a while error is below a certain number, but not for tests
             List<NetworkPatternsCluster> clusters = getClusters(networkPatterns, clusterSize);
             clusters.forEach(cluster -> descent(calcAverageGradientDescentStep(cluster)));
 
+            counter++;
+            ccounter++;
+            sum += getCostCost(networkPatterns)/4;
             if(counter>=10) {
-                System.out.printf("%2f\n",getOverAllCost(networkPatterns));
+                System.out.printf("%2f\n",sum/ccounter);
                 counter = 0;
             }
-            counter++;
         }
     }
 
-    private double getOverAllCost(List<NetworkPattern> networkPatterns) {
+    private double getCostCost(List<NetworkPattern> networkPatterns) {
         return networkPatterns.stream()
                 .mapToDouble(pattern ->{
                     feedForward(pattern.getInput());
@@ -141,5 +146,10 @@ public class NeuralNetwork {
 
     private DoubleVector calcNextNeuronLayer(DoubleVector inputLayer, Matrix weightsMat, DoubleVector inputLayerBiases) {
         return weightsMat.transpose().multiplyByVector(inputLayer).add(inputLayerBiases).applyFunction((DoubleFunction<Double>) activationFunction::process);
+    }
+
+    public DoubleVector compute(DoubleVector input) {
+        feedForward(input);
+        return neuronLayers.get(neuronLayers.dimensions()-1);
     }
 }
