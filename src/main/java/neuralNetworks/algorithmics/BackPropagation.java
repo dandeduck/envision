@@ -19,7 +19,10 @@ public class BackPropagation extends TrainingAlgorithm {
 
     public BackPropagation(double learningRate) {
         this.learningRate = learningRate;
+        renewStoredValues();
+    }
 
+    private void renewStoredValues() {
         biasLayersDescent = new Matrix();
         weightsDescent = new MatrixVector();
         prevErrors = new DoubleVector();
@@ -29,6 +32,7 @@ public class BackPropagation extends TrainingAlgorithm {
     public NetworkGradient calcGradientDescentStep(Matrix neuronLayers, MatrixVector weightMats, DoubleVector outputPattern) {
         Matrix reversedNeuronLayers = new Matrix(neuronLayers.reverse());
         MatrixVector reversedWeightMats = new MatrixVector(weightMats.reverse());
+        renewStoredValues();
 
         IntStream.range(0, neuronLayers.dimensions()-1)
                 .forEach(i -> backProp(reversedNeuronLayers, reversedWeightMats, outputPattern, i));

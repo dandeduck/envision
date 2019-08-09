@@ -102,7 +102,7 @@ public class NeuralNetwork {
     }
 
     private void descent(NetworkGradient gradient) {
-        biasLayers.subtract(gradient.getBiasLayersDescent());
+        biasLayers = biasLayers.subtract(gradient.getBiasLayersDescent());
         weightMats = weightMats.subtract(gradient.getWeightMatsDescent());
     }
 
@@ -122,7 +122,7 @@ public class NeuralNetwork {
     private NetworkGradient averageGradient(List<NetworkGradient> gradients) {
         NetworkGradient avg = gradients.get(0);
         gradients.stream().skip(1).forEach(avg::add);
-        return avg.divide(1/gradients.size());
+        return avg.divide(gradients.size());
     }
 
     private void feedForward(DoubleVector inputValues) {

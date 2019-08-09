@@ -29,8 +29,8 @@ public class NetworkGradient {
     }
 
     public NetworkGradient divide(double val) {
-        Matrix biasLayersDescentProduct = biasLayersDescent.scale(val);
-        MatrixVector weightMatsDescentProduct = weightMatsDescent.scale(val);
+        Matrix biasLayersDescentProduct = biasLayersDescent.scale(1/val);
+        MatrixVector weightMatsDescentProduct = weightMatsDescent.scale(1/val);
 
         return new NetworkGradient(biasLayersDescentProduct, weightMatsDescentProduct);
     }
