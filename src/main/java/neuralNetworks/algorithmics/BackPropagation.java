@@ -59,14 +59,14 @@ public class BackPropagation extends TrainingAlgorithm {
         prevErrors = errors;
     }
 
-    private DoubleVector getOutputError(DoubleVector outputLayer, DoubleVector wantedOutput) {
-        return outputLayer.subtract(wantedOutput); // A - Y
+    private DoubleVector getOutputError(DoubleVector outputLayer, DoubleVector desiredOutput) {
+        return outputLayer.subtract(desiredOutput); // A - Y
     }
 
     private void normalBackProp(Matrix neuronLayers, MatrixVector weightMats, int index) {
-        DoubleVector output = neuronLayers.get(index);
+        DoubleVector nextOutput = neuronLayers.get(index-1);
         DoubleVector input = neuronLayers.get(index+1);
-        DoubleVector errors = calcErrors(prevErrors, weightMats.get(index-1), output);
+        DoubleVector errors = calcErrors(prevErrors, weightMats.get(index-1), nextOutput);
 
         updateDescent(input, errors);
         prevErrors = errors;
@@ -79,16 +79,16 @@ public class BackPropagation extends TrainingAlgorithm {
 
     private Matrix calcWeightsDescent(DoubleVector input, DoubleVector errors) {
         return new Matrix(input.stream()
-                .map(i -> errors.scale(i).scale(learningRate))//dW = input * e * eta
+                .map(neuron -> errors.scale(neuron).scale(learningRate))//a*dW = input * e * eta
                 .collect(Collectors.toList()));
     }
 
     private DoubleVector calcBiasLayersDescent(DoubleVector errors) {
-        return errors.scale(learningRate);
+        return errors.scale(learningRate);//should be a*db?
     }
 
     //prevErrors as in the last calculated errors but the rest are by how they're located in the network (before reversing)
-    private DoubleVector calcErrors(DoubleVector prevErrors, Matrix nextWeights, DoubleVector output) {
-        return nextWeights.multiplyByVector((prevErrors).multiply(new DoubleVector(output.dimensions(), 1.0).subtract(output)));
+    private DoubleVector calcErrors(DoubleVector prevErrors, Matrix nextWeights, DoubleVector nextOutput) {
+        return nextWeights.multiplyByVector(prevErrors.multiply(new DoubleVector(nextOutput.dimensions(), 1.0).subtract(nextOutput)));
     }
 }
