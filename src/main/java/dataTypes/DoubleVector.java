@@ -44,7 +44,7 @@ public class DoubleVector extends Vector<Double>{
     }
 
     public DoubleVector applyFunction(DoubleFunction<Double> func) {
-        return new DoubleVector(super.applyFunction(aDouble -> func.apply(aDouble)));
+        return new DoubleVector(super.applyFunction(func::apply));
     }
 
     @Override

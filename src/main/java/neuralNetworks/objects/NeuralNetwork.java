@@ -25,9 +25,6 @@ public class NeuralNetwork {
     private Matrix biasLayers;
     private MatrixVector weightMats;
 
-    double sum;
-    int ccounter;
-
     public NeuralNetwork(ActivationFunctionTypes activationType, Integer... layerSizes) {
         this(activationType, Arrays.asList(layerSizes));
     }
@@ -66,17 +63,15 @@ public class NeuralNetwork {
 
         int counter = 0;
 
-        while(sum==0 || sum/ccounter > 0.1) {//should be a while error is below a certain number, but not for tests
+        while(counter < 4000) {//should be a while error is below a certain number, but not for tests
             List<NetworkPatternsCluster> clusters = getClusters(networkPatterns, clusterSize);
             clusters.forEach(cluster -> descent(calcAverageGradientDescentStep(cluster)));
 
-            counter++;
-            ccounter++;
-            sum += getCostCost(networkPatterns)/4;
-            if(counter>=10) {
-                System.out.printf("%2f\n",sum/ccounter);
-                counter = 0;
+            if(counter%50==0) {
+//                System.out.printf("%2f\n",getCostCost(networkPatterns)/4);
+                System.out.println(counter);
             }
+            counter++;
         }
     }
 
@@ -110,7 +105,6 @@ public class NeuralNetwork {
         List<NetworkGradient> gradients = cluster.getPatterns().stream()
                 .map(this::calcGradientDescentStep)
                 .collect(Collectors.toList());
-
         return averageGradient(gradients);
     }
 

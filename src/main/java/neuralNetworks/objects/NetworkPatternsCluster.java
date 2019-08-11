@@ -14,11 +14,16 @@ public class NetworkPatternsCluster {
 
     private List<NetworkPattern> pullCluster(List<NetworkPattern> networkPatterns, int clusterSize) {
         return IntStream.range(0, clusterSize)
-                .mapToObj(networkPatterns::remove)
+                .mapToObj(i -> networkPatterns.remove(0))
                 .collect(Collectors.toList());
     }
 
     public List<NetworkPattern> getPatterns() {
         return clusterPatterns;
+    }
+
+    @Override
+    public String toString() {
+        return clusterPatterns.toString();
     }
 }

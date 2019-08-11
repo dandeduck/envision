@@ -68,9 +68,9 @@ public class BackPropagation extends TrainingAlgorithm {
     }
 
     private void normalBackProp(Matrix neuronLayers, MatrixVector weightMats, int index) {
-        DoubleVector nextOutput = neuronLayers.get(index-1);
-        DoubleVector input = neuronLayers.get(index+1);
-        DoubleVector errors = calcErrors(prevErrors, weightMats.get(index-1), nextOutput);
+        Matrix nextWeights = weightMats.get(index-1);
+        DoubleVector input = neuronLayers.get(index);
+        DoubleVector errors = calcErrors(prevErrors, nextWeights, input);
 
         updateDescent(input, errors);
         prevErrors = errors;
@@ -88,11 +88,11 @@ public class BackPropagation extends TrainingAlgorithm {
     }
 
     private DoubleVector calcBiasLayersDescent(DoubleVector errors) {
-        return errors.scale(learningRate);//should be a*db?
+        return errors.scale(learningRate);
     }
 
     //prevErrors as in the last calculated errors but the rest are by how they're located in the network (before reversing)
-    private DoubleVector calcErrors(DoubleVector prevErrors, Matrix nextWeights, DoubleVector nextOutput) {
-        return nextWeights.multiplyByVector(prevErrors.multiply(new DoubleVector(nextOutput.dimensions(), 1.0).subtract(nextOutput)));
+    private DoubleVector calcErrors(DoubleVector prevErrors, Matrix nextWeights, DoubleVector currentLayer) {
+        return nextWeights.multiplyByVector(prevErrors).multiply(new DoubleVector(currentLayer.dimensions(), 1.0).subtract(currentLayer.multiply(currentLayer)));
     }
 }

@@ -5,8 +5,8 @@ import dataTypes.MatrixVector;
 
 public class NetworkGradient {
 
-    private final Matrix biasLayersDescent;
-    private final MatrixVector weightMatsDescent;
+    private Matrix biasLayersDescent;
+    private MatrixVector weightMatsDescent;
 
     public NetworkGradient(Matrix biasLayersDescent, MatrixVector weightMatsDescent) {
         this.biasLayersDescent = biasLayersDescent;
@@ -21,11 +21,9 @@ public class NetworkGradient {
         return weightMatsDescent;
     }
 
-    public NetworkGradient add(NetworkGradient gradient) {
-        Matrix biasLayersDescentSum = biasLayersDescent.add(gradient.getBiasLayersDescent());
-        MatrixVector weightMatsDescentSum = weightMatsDescent.add(gradient.getWeightMatsDescent());
-
-        return new NetworkGradient(biasLayersDescentSum, weightMatsDescentSum);
+    public void add(NetworkGradient gradient) {
+        biasLayersDescent = biasLayersDescent.add(gradient.getBiasLayersDescent());
+        weightMatsDescent = weightMatsDescent.add(gradient.getWeightMatsDescent());
     }
 
     public NetworkGradient divide(double val) {
@@ -33,5 +31,10 @@ public class NetworkGradient {
         MatrixVector weightMatsDescentProduct = weightMatsDescent.scale(1/val);
 
         return new NetworkGradient(biasLayersDescentProduct, weightMatsDescentProduct);
+    }
+
+    @Override
+    public String toString() {
+        return  biasLayersDescent.toString();
     }
 }

@@ -22,4 +22,9 @@ public class NetworkPattern {
     public DoubleVector getOutput() {
         return output;
     }
+
+    @Override
+    public String toString() {
+        return input.toString() + " " + output.toString();
+    }
 }
