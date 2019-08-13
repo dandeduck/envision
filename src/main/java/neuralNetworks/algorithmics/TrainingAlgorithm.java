@@ -3,7 +3,6 @@ package neuralNetworks.algorithmics;
 import dataTypes.DoubleVector;
 import dataTypes.Matrix;
 import dataTypes.MatrixVector;
-import neuralNetworks.objects.NetworkGradient;
 
 public abstract class TrainingAlgorithm {
     public abstract NetworkGradient calcGradientDescentStep(Matrix neuronLayers, MatrixVector weightMats, DoubleVector outputPattern);
