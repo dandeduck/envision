@@ -1,6 +1,5 @@
 package neuralNetworks.constants.enums;
 ;
-import neuralNetworks.algorithmics.BackPropagation;
 import neuralNetworks.algorithmics.TrainingAlgorithm;
 
 import java.util.HashMap;
