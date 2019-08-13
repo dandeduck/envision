@@ -5,11 +5,11 @@ import neuralNetworks.algorithmics.TrainingAlgorithm;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum TrainingAlgorithmTypes {
+public enum TrainingType {
     BACK_PROPAGATION;
 
     public TrainingAlgorithm getAlgorithm(double learningRate) {
-        Map<TrainingAlgorithmTypes, TrainingAlgorithm> algorithms = new HashMap();
+        Map<TrainingType, TrainingAlgorithm> algorithms = new HashMap();
         algorithms.put(BACK_PROPAGATION, new BackPropagation(learningRate));
 
         return algorithms.get(this);

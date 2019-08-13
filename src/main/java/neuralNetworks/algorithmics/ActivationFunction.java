@@ -1,6 +1,6 @@
 package neuralNetworks.algorithmics;
 
-import neuralNetworks.constants.enums.ActivationFunctionTypes;
+import neuralNetworks.constants.enums.ActivationType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,21 +8,21 @@ import java.util.function.Function;
 
 public class ActivationFunction {
 
-    private final ActivationFunctionTypes funcType;
-    private final Map<ActivationFunctionTypes, Function<Double,Double>> functions;
+    private final ActivationType funcType;
+    private final Map<ActivationType, Function<Double,Double>> functions;
 
     private double processedValue;
 
-    public ActivationFunction(ActivationFunctionTypes funcType) {
+    public ActivationFunction(ActivationType funcType) {
         this.funcType = funcType;
 
         functions = new HashMap<>();
-        functions.put(ActivationFunctionTypes.SIGMOID, this::sigmoid);
-        functions.put(ActivationFunctionTypes.TANH, this::tanH);
-        functions.put(ActivationFunctionTypes.RELU, this::reLU);
-        functions.put(ActivationFunctionTypes.LINEAR, this::linear);
-        functions.put(ActivationFunctionTypes.LEAKY_RELU, this::leakyReLU);
-        functions.put(ActivationFunctionTypes.SOFTPLUS, this::softplus);
+        functions.put(ActivationType.SIGMOID, this::sigmoid);
+        functions.put(ActivationType.TANH, this::tanH);
+        functions.put(ActivationType.RELU, this::reLU);
+        functions.put(ActivationType.LINEAR, this::linear);
+        functions.put(ActivationType.LEAKY_RELU, this::leakyReLU);
+        functions.put(ActivationType.SOFTPLUS, this::softplus);
     }
 
     public double process(double preProcessValue) {

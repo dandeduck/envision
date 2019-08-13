@@ -5,8 +5,8 @@ import dataTypes.Matrix;
 import dataTypes.MatrixVector;
 import neuralNetworks.algorithmics.ActivationFunction;
 import neuralNetworks.algorithmics.TrainingAlgorithm;
-import neuralNetworks.constants.enums.ActivationFunctionTypes;
-import neuralNetworks.constants.enums.TrainingAlgorithmTypes;
+import neuralNetworks.constants.enums.ActivationType;
+import neuralNetworks.constants.enums.TrainingType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,11 +25,11 @@ public class NeuralNetwork {
     private Matrix biasLayers;
     private MatrixVector weightMats;
 
-    public NeuralNetwork(ActivationFunctionTypes activationType, Integer... layerSizes) {
+    public NeuralNetwork(ActivationType activationType, Integer... layerSizes) {
         this(activationType, Arrays.asList(layerSizes));
     }
 
-    public NeuralNetwork(ActivationFunctionTypes activationType, List<Integer> layerSizes) {
+    public NeuralNetwork(ActivationType activationType, List<Integer> layerSizes) {
         activationFunction = new ActivationFunction(activationType);
 
         neuronLayers = new Matrix(layerSizes.size(), layerSizes);
@@ -58,7 +58,7 @@ public class NeuralNetwork {
                 .collect(Collectors.toList());
     }
 
-    public void train(TrainingAlgorithmTypes algorithmType, double learningRate, List<NetworkPattern> networkPatterns, int clusterSize) {
+    public void train(TrainingType algorithmType, double learningRate, List<NetworkPattern> networkPatterns, int clusterSize) {
         trainingAlgorithm = algorithmType.getAlgorithm(learningRate);
 
         int counter = 0;

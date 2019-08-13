@@ -1,6 +1,6 @@
 package neuralNetworks.constants.enums;
 
-public enum ActivationFunctionTypes {
+public enum ActivationType {
     TANH,
     RELU,
     SIGMOID,
