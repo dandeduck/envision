@@ -10,7 +10,6 @@ public class MiniBatch {
     private final List<NetworkPattern> networkPatterns;
 
     public MiniBatch(List<NetworkPattern> networkPatterns) {
-
         this.networkPatterns = networkPatterns;
     }
 
