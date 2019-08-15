@@ -49,4 +49,8 @@ public class Layer {
     public Layer scale(double scalar) {
         return new Layer(neurons.scale(scalar), biases.scale(scalar), weightMat.scale(scalar));
     }
+
+    public Layer add(Layer layer) {
+        return new Layer(neurons.add(layer.getNeurons()), biases.add(layer.getBiases()), weightMat.add(layer.getWeightMats()));
+    }
 }

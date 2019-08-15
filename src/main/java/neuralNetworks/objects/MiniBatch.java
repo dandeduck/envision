@@ -28,4 +28,8 @@ public class MiniBatch {
     public DoubleVector getOutput(int index) {
         return get(index).getOutput() ;
     }
+
+    public int size() {
+        return networkPatterns.size();
+    }
 }
