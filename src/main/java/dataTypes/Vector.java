@@ -38,7 +38,9 @@ public abstract class Vector<V>{
                 .collect(Collectors.toList()));
     }
 
-    protected abstract V generateValue(int index);
+    protected V generateValue(int index) {
+        return null;
+    }
 
     public V get(int index) {
         return list.get(index);
@@ -55,7 +57,7 @@ public abstract class Vector<V>{
         return list.size();
     }
 
-    public List<V> multiply(Vector<V> vector) {
+    protected List<V> multiply(Vector<V> vector) {
         return lengthStream()
                 .mapToObj(index -> multiplyValues(get(index), vector.get(index)))
                 .collect(Collectors.toList());
@@ -63,7 +65,7 @@ public abstract class Vector<V>{
 
     protected abstract V multiplyValues(V v1, V v2);
 
-    public List<V> add(Vector<V> vector) {
+    protected List<V> add(Vector<V> vector) {
         return lengthStream()
                 .mapToObj(index -> addValues(get(index), vector.get(index)))
                 .collect(Collectors.toList());
@@ -71,7 +73,7 @@ public abstract class Vector<V>{
 
     protected abstract V addValues(V v1, V v2);
 
-    public List<V> subtract(Vector<V> vector) {
+    protected List<V> subtract(Vector<V> vector) {
         return lengthStream()
                 .mapToObj(index -> subtractValues(get(index), vector.get(index)))
                 .collect(Collectors.toList());
@@ -79,13 +81,13 @@ public abstract class Vector<V>{
 
     protected abstract V subtractValues(V v1, V v2);
 
-    public List<V> applyFunction(Function<V,V> func) {
+    protected List<V> applyFunction(Function<V,V> func) {
         return stream()
                 .map(func)
                 .collect(Collectors.toList());
     }
 
-    public List<V> addValue(V value) {
+    protected List<V> addValue(V value) {
         List<V> tmp = new ArrayList<>();
         tmp.addAll(list);
         tmp.add(value);
@@ -93,9 +95,8 @@ public abstract class Vector<V>{
         return tmp;
     }
 
-    public List<V> reverse() {
-        List<V> tmp = new ArrayList<>();
-        tmp.addAll(list);
+    protected List<V> reverse() {
+        List<V> tmp = new ArrayList<>(list);
         Collections.reverse(tmp);
 
         return tmp;

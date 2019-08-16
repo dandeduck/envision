@@ -78,8 +78,4 @@ public class DoubleVector extends Vector<Double>{
                 .map(value -> multiplyValues(value, scalar))
                 .collect(Collectors.toList()));
     }
-
-    public DoubleVector addDouble(Double value) {
-        return new DoubleVector(super.addValue(value));
-    }
 }

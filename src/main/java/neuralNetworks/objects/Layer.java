@@ -53,4 +53,8 @@ public class Layer {
     public Layer add(Layer layer) {
         return new Layer(neurons.add(layer.getNeurons()), biases.add(layer.getBiases()), weightMat.add(layer.getWeightMats()));
     }
+
+    public Layer mul(Layer layer) {
+        return new Layer(neurons.multiply(layer.getNeurons()), biases.multiply(layer.getBiases()), weightMat.multiply(layer.getWeightMats()));
+    }
 }
